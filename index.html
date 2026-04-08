@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Planning DUO Maghreb</title>
+    <title>Tableau de Planning Équipe</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* ============================================ */
+        /* VERSION RESPONSIVE - TV 32" + SMARTPHONE */
+        /* ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -16,10 +19,8 @@
             background-color: #1a1a1a;
             font-family: 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
-            overflow-x: auto;
         }
         
-        /* Conteneur principal - responsive */
         .tv-container {
             width: 100%;
             min-height: 100vh;
@@ -29,7 +30,6 @@
             color: white;
         }
         
-        /* En-tête responsive */
         .tv-header {
             background: linear-gradient(135deg, #2c3e50, #4a6491);
             padding: 10px 15px;
@@ -51,7 +51,7 @@
         }
         
         .tv-time {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             background: rgba(0,0,0,0.2);
             padding: 5px 10px;
@@ -59,12 +59,11 @@
         }
         
         .tv-date {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-top: 2px;
             opacity: 0.9;
         }
         
-        /* Zone principale - overflow horizontal si nécessaire */
         .tv-main-area {
             flex: 1;
             padding: 8px;
@@ -78,61 +77,102 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         
-        /* Tableau responsive - version smartphone (défilement horizontal) */
-        .planning-table {
+        /* Tableau responsive - permet le défilement horizontal sur smartphone */
+        .table-responsive {
             min-width: 800px;
-            width: 100%;
-            border-collapse: collapse;
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 8px 3px;
+            display: grid;
+            grid-template-columns: 5% 13% 16% 5% 18% 10% 6% 18% 5%;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        
+        .table-body {
+            overflow-x: auto;
+        }
+        
+        .rows-container {
+            min-width: 800px;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 5% 13% 16% 5% 18% 10% 6% 18% 5%;
+            text-align: center;
+            align-items: center;
             background-color: white;
+            border-bottom: 1px solid #3a506b;
+            min-height: 35px;
+            font-size: 0.7rem;
+            padding: 4px 3px;
             color: #333;
         }
         
-        .planning-table th {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
-            color: white;
-            padding: 8px 5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            text-align: center;
-            border: 1px solid #3a506b;
-        }
-        
-        .planning-table td {
-            padding: 6px 4px;
-            font-size: 0.7rem;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
-        
-        .planning-table tr:nth-child(even) {
+        .table-row:nth-child(even) {
             background-color: #f8f9fa;
         }
         
-        .planning-table tr:hover {
-            background-color: #e9ecef;
-        }
-        
-        /* Ligne du jour en rouge */
         .today-row {
             background-color: #e74c3c !important;
+            border-left: 6px solid #c0392b;
             color: white !important;
+            animation: pulseToday 2s infinite;
         }
         
-        .today-row td {
+        .today-row .table-cell {
             color: white !important;
             font-weight: 700;
         }
         
         .today-row-empty-type {
             background-color: #c0392b !important;
+            border-left: 6px solid #962d22;
             color: white !important;
+            animation: pulseTodayDark 2s infinite;
         }
         
-        .empty-type-row {
-            color: #7f8c8d !important;
-            background-color: #f1f2f3 !important;
+        @keyframes pulseToday {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        
+        @keyframes pulseTodayDark {
+            0% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(192, 57, 43, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); }
+        }
+        
+        .table-cell {
+            padding: 4px 2px;
+            overflow: visible !important;
+            white-space: normal !important;
+            word-wrap: break-word;
+            line-height: 1.2;
+            border-right: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .table-cell.left-align {
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 8px;
+        }
+        
+        .empty-cell {
+            color: #95a5a6;
+            font-style: italic;
         }
         
         .triangle-cell {
@@ -147,12 +187,11 @@
             color: #e74c3c;
         }
         
-        .empty-cell {
-            color: #95a5a6;
-            font-style: italic;
+        .empty-type-row {
+            color: #7f8c8d !important;
+            background-color: #f1f2f3 !important;
         }
         
-        /* Équipe - noms côte à côte */
         .equipe-names {
             display: flex;
             flex-wrap: wrap;
@@ -161,7 +200,9 @@
         }
         
         .equipe-name {
-            font-size: 0.7rem;
+            padding: 1px 0;
+            font-size: 0.65rem;
+            color: #333;
         }
         
         .equipe-name:not(:last-child)::after {
@@ -169,7 +210,10 @@
             margin-left: 4px;
         }
         
-        /* Barre de statut responsive */
+        .today-row .equipe-name {
+            color: white;
+        }
+        
         .tv-status {
             background-color: rgba(0,0,0,0.8);
             color: white;
@@ -179,7 +223,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 8px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         
         .refresh-btn {
@@ -200,7 +244,7 @@
             margin-left: 8px;
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         
         .status-indicator {
@@ -210,7 +254,6 @@
             display: inline-block;
         }
         
-        /* Modals */
         .connection-modal {
             position: fixed;
             top: 0;
@@ -248,7 +291,7 @@
             border-radius: 5px;
             z-index: 10000;
             display: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         .modal-content {
@@ -262,9 +305,9 @@
         }
         
         .new-client-highlight {
+            animation: blinkNewClient 1s infinite alternate;
             font-weight: 800 !important;
             color: #ffffff !important;
-            background-color: #2ecc71;
             border-radius: 4px;
             padding: 2px 4px !important;
         }
@@ -276,9 +319,9 @@
         }
         
         .updated-time-highlight {
+            animation: blinkUpdatedTime 1s infinite alternate;
             font-weight: 800 !important;
             color: #ffffff !important;
-            background-color: #f39c12;
             border-radius: 4px;
             padding: 2px 4px !important;
         }
@@ -289,34 +332,35 @@
             font-size: 0.7rem;
         }
         
-        /* Version TV 32" (écran large) */
+        .new-count-badge {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 1px 4px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            margin-left: 3px;
+        }
+        
+        /* TV 32" (écran large) */
         @media (min-width: 1200px) {
-            .tv-header h1 { font-size: 2rem; }
+            .tv-header h1 { font-size: 1.8rem; }
             .tv-time { font-size: 1.5rem; padding: 8px 15px; }
             .tv-date { font-size: 1rem; }
-            .planning-table th { font-size: 1rem; padding: 12px 8px; }
-            .planning-table td { font-size: 0.9rem; padding: 10px 6px; }
+            .table-header { font-size: 1rem; padding: 10px 3px; }
+            .table-row { font-size: 0.9rem; min-height: 40px; }
             .equipe-name { font-size: 0.85rem; }
-            .tv-status { font-size: 0.9rem; }
+            .tv-status { font-size: 0.85rem; }
             .refresh-btn { font-size: 0.9rem; padding: 6px 12px; }
         }
         
-        /* Version très petit smartphone */
-        @media (max-width: 480px) {
-            .tv-header h1 { font-size: 0.9rem; }
-            .tv-time { font-size: 0.8rem; }
-            .tv-date { font-size: 0.65rem; }
+        @keyframes blinkNewClient {
+            0% { background-color: #2ecc71; }
+            100% { background-color: #27ae60; }
         }
         
-        /* Animation flash */
-        @keyframes pulseFlash {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-        
-        .highlight-cell {
-            animation: pulseFlash 1s ease-in-out 3;
+        @keyframes blinkUpdatedTime {
+            0% { background-color: #f39c12; }
+            100% { background-color: #e67e22; }
         }
     </style>
 </head>
@@ -332,16 +376,12 @@
         
         <div class="tv-main-area">
             <div class="table-wrapper">
-                <table class="planning-table" id="planningTable">
-                    <thead>
-                        <tr>
-                            <th>Type</th><th>Client</th><th>Projet</th><th>Imp</th><th>Lieu</th><th>Date</th><th>Heure</th><th>Équipe</th><th>Véhicule</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr><td colspan="9" style="text-align:center">Chargement...</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-header">
+                    <div>Type</div><div>Client</div><div>Projet</div><div>Imp</div><div>Lieu</div><div>Date</div><div>Heure</div><div>Équipe</div><div>Véhicule</div>
+                </div>
+                <div class="table-body">
+                    <div class="rows-container" id="rowsContainer"></div>
+                </div>
             </div>
         </div>
         
@@ -350,36 +390,35 @@
                 <span id="totalRows">0</span> interventions | 
                 <span id="todayCount">0</span> aujourd'hui
                 <span class="connection-status" id="connectionStatus">
-                    <span class="status-indicator" id="statusIndicator" style="background:#f39c12"></span>
+                    <span class="status-indicator" id="statusIndicator"></span>
                     <span id="statusText">Vérification...</span>
                 </span>
-                <span id="newClientsIndicator" style="margin-left: 8px; display: none;">🆕 <span id="newClientsCount">0</span></span>
+                <span id="newClientsIndicator" style="margin-left: 8px; display: none;">
+                    🆕 <span id="newClientsCount">0</span> nouveau(x)
+                    <span class="new-count-badge" id="newCountBadge">0</span>
+                </span>
             </div>
             <div>
                 <button id="refreshBtn" class="refresh-btn">🔄 ACTUALISER</button>
-                <button onclick="showEditLinkModal()" class="btn-outline-light ms-2" style="background:transparent;border:1px solid white;color:white;padding:4px 8px;border-radius:5px;margin-left:5px;font-size:0.7rem">🔗 Lien</button>
+                <button onclick="showEditLinkModal()" class="btn-outline-light ms-2" style="background:transparent;border:1px solid white;color:white;padding:4px 8px;border-radius:5px;margin-left:5px">🔗 Lien</button>
             </div>
             <div id="lastUpdated">MAJ: <span id="lastUpdateTime">--:--</span></div>
         </div>
         
-        <div id="loading" class="loading-overlay d-none">
-            <div class="spinner-border text-primary" style="width:2rem;height:2rem" role="status"></div>
-            <p class="mt-2 text-white" style="font-size:0.9rem">Chargement...</p>
-        </div>
-        
+        <div class="warning-message" id="warningMessage" style="display:none">⚠️ TROP DE LIGNES</div>
+        <div id="loading" class="loading-overlay d-none"><div class="spinner-border text-primary"></div><p>Chargement...</p></div>
         <div id="notification" class="notification"></div>
         
-        <!-- Modal édition lien -->
         <div id="editLinkModal" class="connection-modal">
             <div class="modal-content">
-                <h3 style="color:#3498db;font-size:1.1rem">✏️ Mettre à jour le lien</h3>
+                <h3 style="color:#3498db">✏️ Mettre à jour le lien</h3>
                 <div style="text-align:left;margin:10px 0">
-                    <label style="font-size:0.8rem">Lien actuel :</label>
+                    <label>Lien actuel :</label>
                     <div style="background:#f8f9fa;padding:6px;border-radius:4px;font-size:0.7rem;word-break:break-all" id="currentLinkDisplay"></div>
-                    <label style="font-size:0.8rem;margin-top:10px">Nouveau lien :</label>
-                    <input type="text" id="newSheetLink" style="width:100%;padding:6px;border:1px solid #3498db;border-radius:4px;font-size:0.8rem">
+                    <label style="margin-top:10px">Nouveau lien :</label>
+                    <input type="text" id="newSheetLink" style="width:100%;padding:6px;border:1px solid #3498db;border-radius:4px">
                 </div>
-                <div id="linkStatus" style="padding:6px;border-radius:4px;margin:8px 0;display:none;font-size:0.7rem"></div>
+                <div id="linkStatus" style="padding:6px;border-radius:4px;margin:8px 0;display:none"></div>
                 <div>
                     <button onclick="saveNewLink()" class="btn btn-success" style="font-size:0.7rem;padding:4px 8px">💾 Enregistrer</button>
                     <button onclick="hideEditLinkModal()" class="btn btn-secondary" style="font-size:0.7rem;padding:4px 8px">Fermer</button>
@@ -390,11 +429,15 @@
 
     <script>
         // ============================================
-        // CONFIGURATION
+        // CONFIGURATION - VOTRE LIEN QUI FONCTIONNE
         // ============================================
         const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSg3azNidCrk7DOWOCJPCjoplrmuMB9LUs876C4EcRWyePwzBpE8CRbEQSreOwHUC0x6Ux9w8HTvu7/pub?gid=432489701&single=true&output=csv';
         
+        const AUTO_REFRESH_MINUTES = 5;
+        const HIGHLIGHT_DURATION = 60 * 60 * 1000;
+        
         let GOOGLE_SHEET_URL = localStorage.getItem('saved_sheet_url') || DEFAULT_SHEET_URL;
+        
         let previousData = [];
         let newClients = new Map();
         let updatedTimes = new Map();
@@ -442,12 +485,85 @@
         
         function hideEditLinkModal() { hideAllModals(); }
         
-        // Nettoyer anciens highlights
+        function saveHighlightState() {
+            try {
+                localStorage.setItem('newClients', JSON.stringify(Array.from(newClients.entries())));
+                localStorage.setItem('updatedTimes', JSON.stringify(Array.from(updatedTimes.entries())));
+            } catch(e) {}
+        }
+        
+        function loadHighlightState() {
+            try {
+                const savedNewClients = localStorage.getItem('newClients');
+                const savedUpdatedTimes = localStorage.getItem('updatedTimes');
+                if(savedNewClients) newClients = new Map(JSON.parse(savedNewClients));
+                if(savedUpdatedTimes) updatedTimes = new Map(JSON.parse(savedUpdatedTimes));
+            } catch(e) {}
+        }
+        
         function cleanOldHighlights() {
             const now = Date.now();
-            const HIGHLIGHT_DURATION = 60 * 60 * 1000;
-            for (const [id, ts] of newClients) if (now - ts > HIGHLIGHT_DURATION) newClients.delete(id);
-            for (const [id, ts] of updatedTimes) if (now - ts > HIGHLIGHT_DURATION) updatedTimes.delete(id);
+            let cleaned = false;
+            for(const [id, ts] of newClients) if(now - ts > HIGHLIGHT_DURATION) { newClients.delete(id); cleaned = true; }
+            for(const [id, ts] of updatedTimes) if(now - ts > HIGHLIGHT_DURATION) { updatedTimes.delete(id); cleaned = true; }
+            if(cleaned) { saveHighlightState(); updateNewClientsIndicator(); }
+        }
+        
+        function updateNewClientsIndicator() {
+            const indicator = document.getElementById('newClientsIndicator');
+            const countEl = document.getElementById('newClientsCount');
+            const badge = document.getElementById('newCountBadge');
+            const total = newClients.size + updatedTimes.size;
+            if(total > 0) {
+                indicator.style.display = 'inline';
+                countEl.textContent = total;
+                badge.textContent = total;
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        function detectChanges(currentRows) {
+            if(previousData.length === 0) { previousData = currentRows.slice(); return; }
+            const now = Date.now();
+            const prevMap = new Map(previousData.map(r => [r.uniqueId, r]));
+            let newAdded = 0, timesUp = 0;
+            
+            currentRows.forEach(row => {
+                const id = row.uniqueId;
+                if(!prevMap.has(id)) {
+                    const similar = previousData.find(r => r.client === row.client && r.projet === row.projet && r.date === row.date);
+                    if(similar && similar.heure !== row.heure) {
+                        updatedTimes.set(id, now);
+                        timesUp++;
+                    } else {
+                        newClients.set(id, now);
+                        newAdded++;
+                    }
+                } else {
+                    const prev = prevMap.get(id);
+                    if(prev.heure !== row.heure) {
+                        if(newClients.has(id)) newClients.delete(id);
+                        updatedTimes.set(id, now);
+                        timesUp++;
+                    }
+                }
+            });
+            
+            const currentIds = new Set(currentRows.map(r => r.uniqueId));
+            for(const [id] of newClients) if(!currentIds.has(id)) newClients.delete(id);
+            for(const [id] of updatedTimes) if(!currentIds.has(id)) updatedTimes.delete(id);
+            
+            saveHighlightState();
+            updateNewClientsIndicator();
+            
+            if(newAdded > 0 || timesUp > 0) {
+                let msg = '';
+                if(newAdded > 0) msg += `${newAdded} nouveau(x) client(s) `;
+                if(timesUp > 0) { if(msg) msg += 'et '; msg += `${timesUp} heure(s) modifiée(s)`; }
+                showNotification(`🎯 ${msg}`);
+            }
+            previousData = currentRows.slice();
         }
         
         function parseCSV(text) {
@@ -469,23 +585,25 @@
             return rows;
         }
         
-        function processData(rows) {
+        function processDataWithFilter(rows) {
             const now = new Date(); now.setHours(0,0,0,0);
             const futureRows = [];
-            let todayCount = 0, startIndex = 0;
+            let todayCount = 0;
+            let startIndex = 0;
             
             if(rows.length > 0) {
                 const firstRow = rows[0];
-                const isHeader = firstRow.some(cell => cell && typeof cell === 'string' && 
-                    ['type','client','projet','lieu','date','heure','équipe','equipe'].some(k => cell.toLowerCase().includes(k)));
+                const headerKeywords = ['type', 'client', 'projet', 'lieu', 'date', 'heure', 'équipe', 'equipe', 'véhicule'];
+                const isHeader = firstRow.some(cell => cell && typeof cell === 'string' && headerKeywords.some(k => cell.toLowerCase().includes(k)));
                 if(isHeader) startIndex = 1;
             }
             
             const TYPE=0, CLIENT=1, PROJET=2, IMP=21, LIEU=3, DATE=4, HEURE=5, VEHICULE=22;
             const EQUIPE_START=6, EQUIPE_END=20;
+            const maxRows = 20;
             let rowCount = 0;
             
-            for(let i=startIndex; i<rows.length && rowCount<20; i++) {
+            for(let i=startIndex; i<rows.length && rowCount<maxRows; i++) {
                 const row = rows[i];
                 if(row.length <= DATE) continue;
                 const dateStr = row[DATE] || '';
@@ -541,107 +659,108 @@
         }
         
         function displayData(data) {
-            const tbody = document.getElementById('tableBody');
+            const container = document.getElementById('rowsContainer');
             const totalRows = document.getElementById('totalRows');
             const todayCountSpan = document.getElementById('todayCount');
-            const newIndicator = document.getElementById('newClientsIndicator');
-            const newCountSpan = document.getElementById('newClientsCount');
             
+            container.innerHTML = '';
             totalRows.textContent = data.rows.length;
             todayCountSpan.textContent = data.todayCount;
             
-            const totalNew = newClients.size + updatedTimes.size;
-            if(totalNew > 0) {
-                newIndicator.style.display = 'inline';
-                newCountSpan.textContent = totalNew;
-            } else {
-                newIndicator.style.display = 'none';
-            }
-            
             if(data.rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center">Aucune intervention future</td></tr>';
+                container.innerHTML = `<div class="table-row"><div class="table-cell" style="grid-column:1/-1;text-align:center">Aucune intervention future</div></div>`;
                 return;
             }
             
-            tbody.innerHTML = '';
             data.rows.forEach(row => {
-                const tr = document.createElement('tr');
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'table-row';
+                
                 if(row.isToday) {
-                    tr.classList.add(!row.type || row.type.trim() === '' || row.type === '-' ? 'today-row-empty-type' : 'today-row');
+                    rowDiv.classList.add(!row.type || row.type.trim() === '' || row.type === '-' ? 'today-row-empty-type' : 'today-row');
                 } else if(!row.type || row.type.trim() === '' || row.type === '-') {
-                    tr.classList.add('empty-type-row');
+                    rowDiv.classList.add('empty-type-row');
                 }
                 
                 // Type
-                const tdType = document.createElement('td');
-                tdType.textContent = row.type || '-';
-                if(row.type && row.type.toLowerCase().includes('montage')) tdType.classList.add('triangle-cell');
-                if(!row.type) tdType.classList.add('empty-cell');
-                tr.appendChild(tdType);
+                const typeCell = document.createElement('div');
+                typeCell.className = 'table-cell';
+                typeCell.textContent = row.type || '-';
+                if(row.type && row.type.toLowerCase().includes('montage')) typeCell.classList.add('triangle-cell');
+                if(!row.type) typeCell.classList.add('empty-cell');
+                rowDiv.appendChild(typeCell);
                 
                 // Client
-                const tdClient = document.createElement('td');
-                tdClient.textContent = row.client || '-';
-                if(newClients.has(row.uniqueId) && !updatedTimes.has(row.uniqueId)) tdClient.classList.add('new-client-highlight');
-                if(!row.client) tdClient.classList.add('empty-cell');
-                tr.appendChild(tdClient);
+                const clientCell = document.createElement('div');
+                clientCell.className = 'table-cell';
+                if(newClients.has(row.uniqueId) && !updatedTimes.has(row.uniqueId)) clientCell.classList.add('new-client-highlight');
+                clientCell.textContent = row.client || '-';
+                if(!row.client) clientCell.classList.add('empty-cell');
+                rowDiv.appendChild(clientCell);
                 
                 // Projet
-                const tdProjet = document.createElement('td');
-                tdProjet.textContent = row.projet || '-';
-                if(!row.projet) tdProjet.classList.add('empty-cell');
-                tr.appendChild(tdProjet);
+                const projetCell = document.createElement('div');
+                projetCell.className = 'table-cell';
+                projetCell.textContent = row.projet || '-';
+                if(!row.projet) projetCell.classList.add('empty-cell');
+                rowDiv.appendChild(projetCell);
                 
                 // Imp
-                const tdImp = document.createElement('td');
-                tdImp.textContent = row.imp || '-';
-                if(!row.imp) tdImp.classList.add('empty-cell');
-                tr.appendChild(tdImp);
+                const impCell = document.createElement('div');
+                impCell.className = 'table-cell';
+                impCell.textContent = row.imp || '-';
+                if(!row.imp) impCell.classList.add('empty-cell');
+                rowDiv.appendChild(impCell);
                 
                 // Lieu
-                const tdLieu = document.createElement('td');
-                tdLieu.textContent = row.lieu || '-';
-                if(!row.lieu) tdLieu.classList.add('empty-cell');
-                tr.appendChild(tdLieu);
+                const lieuCell = document.createElement('div');
+                lieuCell.className = 'table-cell left-align';
+                lieuCell.textContent = row.lieu || '-';
+                if(!row.lieu) lieuCell.classList.add('empty-cell');
+                rowDiv.appendChild(lieuCell);
                 
                 // Date
-                const tdDate = document.createElement('td');
-                tdDate.textContent = formatDate(row.date);
-                if(!row.date) tdDate.classList.add('empty-cell');
-                tr.appendChild(tdDate);
+                const dateCell = document.createElement('div');
+                dateCell.className = 'table-cell left-align';
+                dateCell.textContent = formatDate(row.date);
+                if(!row.date) dateCell.classList.add('empty-cell');
+                rowDiv.appendChild(dateCell);
                 
                 // Heure
-                const tdHeure = document.createElement('td');
-                tdHeure.textContent = row.heure || '-';
-                if(updatedTimes.has(row.uniqueId)) tdHeure.classList.add('updated-time-highlight');
-                if(!row.heure) tdHeure.classList.add('empty-cell');
-                tr.appendChild(tdHeure);
+                const heureCell = document.createElement('div');
+                heureCell.className = 'table-cell';
+                if(updatedTimes.has(row.uniqueId)) heureCell.classList.add('updated-time-highlight');
+                heureCell.textContent = row.heure || '-';
+                if(!row.heure) heureCell.classList.add('empty-cell');
+                rowDiv.appendChild(heureCell);
                 
                 // Équipe
-                const tdEquipe = document.createElement('td');
+                const equipeCell = document.createElement('div');
+                equipeCell.className = 'table-cell';
                 if(row.equipeMembers && row.equipeMembers.length > 0) {
                     const container = document.createElement('div');
                     container.className = 'equipe-names';
                     row.equipeMembers.forEach(m => {
-                        const span = document.createElement('span');
-                        span.className = 'equipe-name';
-                        span.textContent = m;
-                        container.appendChild(span);
+                        const nameDiv = document.createElement('div');
+                        nameDiv.className = 'equipe-name';
+                        nameDiv.textContent = m;
+                        container.appendChild(nameDiv);
                     });
-                    tdEquipe.appendChild(container);
+                    equipeCell.appendChild(container);
                 } else {
-                    tdEquipe.textContent = '-';
-                    tdEquipe.classList.add('empty-cell');
+                    equipeCell.textContent = '-';
+                    equipeCell.classList.add('empty-cell');
                 }
-                tr.appendChild(tdEquipe);
+                rowDiv.appendChild(equipeCell);
                 
                 // Véhicule
-                const tdVehicule = document.createElement('td');
-                tdVehicule.textContent = row.vehicule || '-';
-                if(!row.vehicule) tdVehicule.classList.add('empty-cell');
-                tr.appendChild(tdVehicule);
+                const vehiculeCell = document.createElement('div');
+                vehiculeCell.className = 'table-cell';
+                vehiculeCell.textContent = row.vehicule || '-';
+                if(!row.vehicule) vehiculeCell.classList.add('empty-cell');
+                rowDiv.appendChild(vehiculeCell);
                 
-                tbody.appendChild(tr);
+                container.appendChild(rowDiv);
             });
         }
         
@@ -656,8 +775,8 @@
                 let url = GOOGLE_SHEET_URL;
                 url += (url.includes('?') ? '&' : '?') + '_=' + timestamp;
                 
-                // Utilisation de api.allorigins.win (plus fiable sur GitHub Pages)
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                // Utilisation du proxy qui fonctionnait avant
+                const proxyUrl = 'https://corsproxy.io/?';
                 const response = await fetch(proxyUrl + encodeURIComponent(url));
                 
                 if(!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -667,23 +786,30 @@
                 if(!csvText || csvText.trim().length < 10) throw new Error('Fichier vide');
                 
                 const rows = parseCSV(csvText);
-                const processedData = processData(rows);
+                const processedData = processDataWithFilter(rows);
+                detectChanges(processedData.rows);
                 displayData(processedData);
                 
                 document.getElementById('lastUpdateTime').textContent = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-                updateConnectionStatus('connected', `OK (${processedData.rows.length})`);
-                
-                // Mise à jour des données précédentes pour détection (simplifiée)
-                previousData = processedData.rows.slice();
+                updateConnectionStatus('connected', `Données chargées (${processedData.rows.length})`);
                 
             } catch(error) {
                 console.error(error);
                 let msg = error.message;
                 updateConnectionStatus('disconnected', msg);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center;color:#e74c3c">❌ Erreur: ${msg}<br><button onclick="showEditLinkModal()" style="margin-top:8px;padding:4px 8px">🔗 Éditer le lien</button></td></tr>`;
+                document.getElementById('rowsContainer').innerHTML = `<div class="table-row"><div class="table-cell" style="grid-column:1/-1;text-align:center;color:#e74c3c">❌ Erreur: ${msg}<br><button onclick="showEditLinkModal()" style="margin-top:8px">🔗 Éditer le lien</button></div></div>`;
             } finally {
                 setTimeout(() => loading.classList.add('d-none'), 500);
             }
+        }
+        
+        async function testLink(url) {
+            try {
+                const proxyUrl = 'https://corsproxy.io/?';
+                const testUrl = proxyUrl + encodeURIComponent(url + '?_=' + Date.now());
+                const res = await fetch(testUrl, { method: 'HEAD' });
+                return res.ok;
+            } catch { return false; }
         }
         
         async function saveNewLink() {
@@ -693,32 +819,27 @@
             statusDiv.style.display = 'block';
             statusDiv.style.background = '#d1ecf1';
             statusDiv.textContent = '🔍 Test...';
-            
-            try {
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const testUrl = proxyUrl + encodeURIComponent(newLink + '?_=' + Date.now());
-                const res = await fetch(testUrl);
-                if(res.ok) {
-                    GOOGLE_SHEET_URL = newLink;
-                    localStorage.setItem('saved_sheet_url', newLink);
-                    statusDiv.style.background = '#d4edda';
-                    statusDiv.textContent = '✅ Lien sauvegardé !';
-                    setTimeout(() => { hideEditLinkModal(); loadData(); }, 1500);
-                } else {
-                    statusDiv.style.background = '#f8d7da';
-                    statusDiv.textContent = '❌ Lien invalide';
-                }
-            } catch(e) {
+            const ok = await testLink(newLink);
+            if(ok) {
+                GOOGLE_SHEET_URL = newLink;
+                localStorage.setItem('saved_sheet_url', newLink);
+                statusDiv.style.background = '#d4edda';
+                statusDiv.textContent = '✅ Lien sauvegardé !';
+                setTimeout(() => { hideEditLinkModal(); loadData(); }, 1500);
+            } else {
                 statusDiv.style.background = '#f8d7da';
                 statusDiv.textContent = '❌ Lien invalide';
             }
         }
         
         function initialize() {
+            hideAllModals();
+            loadHighlightState();
             updateClock();
             setInterval(updateClock, 1000);
+            setInterval(cleanOldHighlights, 60000);
             loadData();
-            setInterval(() => { if(connectionStatus === 'connected') loadData(); }, 5 * 60000);
+            setInterval(() => { if(connectionStatus === 'connected') loadData(); }, AUTO_REFRESH_MINUTES * 60000);
         }
         
         document.addEventListener('DOMContentLoaded', initialize);
