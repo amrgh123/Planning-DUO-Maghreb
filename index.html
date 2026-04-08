@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Planning DUO Maghreb</title>
+    <title>Tableau de Planning Équipe</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* RÉINITIALISATION COMPLÈTE - AUCUN SCROLL */
         * {
             margin: 0;
             padding: 0;
@@ -15,32 +16,43 @@
         body {
             background-color: #1a1a1a;
             font-family: 'Segoe UI', Arial, sans-serif;
-            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
         }
         
+        /* CONTENEUR PRINCIPAL - S'ADAPTE À L'ÉCRAN 32" */
         .tv-container {
-            width: 100%;
-            min-height: 100vh;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             background: linear-gradient(135deg, #2c3e50, #34495e);
+            overflow: hidden;
             color: white;
         }
         
+        /* EN-TÊTE - RÉDUIT POUR 32" */
         .tv-header {
             background: linear-gradient(135deg, #2c3e50, #4a6491);
-            padding: 10px 15px;
+            color: white;
+            padding: 10px 20px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            flex-shrink: 0;
+            height: 80px;
         }
         
         .tv-header h1 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .tv-clock {
@@ -48,57 +60,71 @@
         }
         
         .tv-time {
-            font-size: 1rem;
+            font-size: 1.5rem;
             font-weight: 700;
             background: rgba(0,0,0,0.2);
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 8px;
+            display: inline-block;
         }
         
         .tv-date {
-            font-size: 0.75rem;
-            margin-top: 2px;
+            font-size: 1.1rem;
+            margin-top: 3px;
             opacity: 0.9;
         }
         
+        /* ZONE PRINCIPALE - PREND TOUT L'ESPACE RESTANT */
         .tv-main-area {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             padding: 8px;
-            overflow-x: auto;
         }
         
+        /* TABLEAU - S'ADAPTE DYNAMIQUEMENT */
         .table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             background-color: #2c3e50;
             border-radius: 8px;
+            overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            overflow-x: auto;
         }
         
-        /* Conteneur pour le défilement synchronisé */
+        /* Conteneur pour le défilement horizontal */
         .table-scroll-container {
+            flex: 1;
             overflow-x: auto;
+            overflow-y: auto;
         }
         
+        /* RÉPARTITION DES COLONNES - OPTIMISÉ POUR 32" */
         .table-header {
             background: linear-gradient(135deg, #34495e, #2c3e50);
             color: white;
-            padding: 8px 3px;
+            padding: 10px 3px;
             display: grid;
             grid-template-columns: 5% 13% 16% 5% 18% 10% 6% 18% 5%;
             text-align: center;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+            font-size: 1.1rem;
             flex-shrink: 0;
             min-width: 800px;
         }
         
+        /* CORPS DU TABLEAU */
         .rows-container {
             display: flex;
             flex-direction: column;
             min-width: 800px;
         }
         
+        /* LIGNE DU TABLEAU - OPTIMISÉ POUR 32" */
         .table-row {
             display: grid;
             grid-template-columns: 5% 13% 16% 5% 18% 10% 6% 18% 5%;
@@ -107,8 +133,9 @@
             background-color: white;
             border-bottom: 1px solid #3a506b;
             min-height: 35px;
-            font-size: 0.75rem;
+            font-size: 1rem;
             padding: 4px 3px;
+            transition: all 0.3s ease;
             color: #333;
         }
         
@@ -116,6 +143,12 @@
             background-color: #f8f9fa;
         }
         
+        .table-row:hover {
+            background-color: #e9ecef;
+            transform: scale(1.005);
+        }
+        
+        /* LIGNE DU JOUR EN ROUGE */
         .today-row {
             background-color: #e74c3c !important;
             border-left: 6px solid #c0392b;
@@ -126,13 +159,41 @@
         .today-row .table-cell {
             color: white !important;
             font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
+        .today-row .empty-cell {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .today-row .triangle-cell::before {
+            color: white !important;
+        }
+        
+        /* LIGNE DU JOUR EN ROUGE FONCÉ */
         .today-row-empty-type {
             background-color: #c0392b !important;
             border-left: 6px solid #962d22;
             color: white !important;
             animation: pulseTodayDark 2s infinite;
+        }
+        
+        .today-row-empty-type .table-cell {
+            color: white !important;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .today-row-empty-type .empty-cell {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .today-row-empty-type .equipe-name {
+            color: white !important;
+        }
+        
+        .today-row-empty-type .equipe-name:not(:last-child)::after {
+            color: rgba(255, 255, 255, 0.8) !important;
         }
         
         @keyframes pulseToday {
@@ -147,30 +208,44 @@
             100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); }
         }
         
+        /* TEXTE TOUJOURS VISIBLE */
         .table-cell {
-            padding: 4px 2px;
+            padding: 6px 2px;
             overflow: visible !important;
             white-space: normal !important;
             word-wrap: break-word;
-            line-height: 1.2;
+            hyphens: auto;
+            line-height: 1.1;
             border-right: 1px solid #eee;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            min-height: 100%;
         }
         
+        /* Colonnes alignées à gauche */
         .table-cell.left-align {
             justify-content: flex-start;
             text-align: left;
             padding-left: 8px;
         }
         
+        .table-cell.long-text {
+            font-size: 0.9em;
+        }
+        
+        .table-cell:last-child {
+            border-right: none;
+        }
+        
+        /* CELLULES VIDE */
         .empty-cell {
             color: #95a5a6;
             font-style: italic;
         }
         
+        /* TRIANGLE POUR MONTAGE */
         .triangle-cell {
             color: #e74c3c;
             font-weight: 700;
@@ -179,77 +254,116 @@
         .triangle-cell::before {
             content: "▲";
             margin-right: 3px;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: #e74c3c;
         }
         
+        /* Lignes avec type vide en gris clair */
         .empty-type-row {
             color: #7f8c8d !important;
             background-color: #f1f2f3 !important;
         }
         
+        .empty-type-row .table-cell {
+            color: #7f8c8d !important;
+        }
+        
+        .empty-type-row .equipe-name {
+            color: #7f8c8d !important;
+        }
+        
+        .empty-type-row .equipe-name:not(:last-child)::after {
+            color: #95a5a6 !important;
+        }
+        
+        .empty-type-row:hover {
+            background-color: #e6e8ea !important;
+        }
+        
+        /* ÉQUIPE - AFFICHAGE DES NOMS CÔTE À CÔTE */
         .equipe-names {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
         }
         
         .equipe-name {
             padding: 1px 0;
-            font-size: 0.7rem;
+            margin: 0;
+            font-size: 0.95em;
             color: #333;
         }
         
+        /* Séparateur entre les noms */
         .equipe-name:not(:last-child)::after {
             content: " - ";
-            margin-left: 4px;
+            color: #000;
+            font-weight: bold;
+            margin-left: 6px;
         }
         
+        /* Pour les lignes du jour avec triangle */
         .today-row .equipe-name {
             color: white;
         }
         
+        .today-row .equipe-name:not(:last-child)::after {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* BARRE DE STATUT - RÉDUIT POUR 32" */
         .tv-status {
             background-color: rgba(0,0,0,0.8);
             color: white;
-            padding: 6px 12px;
+            padding: 8px 15px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            height: 50px;
         }
         
         .refresh-btn {
             background: linear-gradient(135deg, #3498db, #2980b9);
             border: none;
-            padding: 4px 10px;
-            font-size: 0.7rem;
+            padding: 6px 12px;
+            font-size: 0.9rem;
             font-weight: 600;
             border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             color: white;
             cursor: pointer;
         }
         
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* INDICATEUR DE CONNEXION */
         .connection-status {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            margin-left: 8px;
-            padding: 2px 6px;
+            gap: 6px;
+            margin-left: 15px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.65rem;
+            font-size: 0.85rem;
         }
         
         .status-indicator {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
         
+        /* MODALS */
         .connection-modal {
             position: fixed;
             top: 0;
@@ -264,12 +378,12 @@
         }
         
         .loading-overlay {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(26,26,26,0.9);
+            background: rgba(26, 26, 26, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -277,92 +391,173 @@
             flex-direction: column;
         }
         
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.25rem;
+        }
+        
+        .loading-overlay p {
+            font-size: 1.2rem !important;
+        }
+        
         .notification {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             background: #27ae60;
             color: white;
-            padding: 6px 12px;
+            padding: 8px 15px;
             border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 10000;
             display: none;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
         }
         
         .modal-content {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
-            max-width: 90%;
-            width: 400px;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
             color: #333;
         }
         
+        .modal-content h3 {
+            font-size: 1.3rem;
+        }
+        
+        .warning-message {
+            background-color: #f39c12;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .btn-outline-light, .btn-outline-info {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        /* ANIMATIONS POUR NOUVEAUX CLIENTS */
         .new-client-highlight {
             animation: blinkNewClient 1s infinite alternate;
+            position: relative;
             font-weight: 800 !important;
             color: #ffffff !important;
             border-radius: 4px;
-            padding: 2px 4px !important;
+            padding: 3px 6px !important;
+            margin: 0 1px;
         }
         
         .new-client-highlight::before {
             content: "🆕";
-            margin-right: 4px;
-            font-size: 0.7rem;
+            margin-right: 5px;
+            font-size: 0.9rem;
+            animation: pulseIcon 1.5s infinite;
         }
         
         .updated-time-highlight {
             animation: blinkUpdatedTime 1s infinite alternate;
+            position: relative;
             font-weight: 800 !important;
             color: #ffffff !important;
             border-radius: 4px;
-            padding: 2px 4px !important;
+            padding: 3px 6px !important;
+            margin: 0 1px;
         }
         
         .updated-time-highlight::before {
             content: "🕒";
-            margin-right: 4px;
-            font-size: 0.7rem;
+            margin-right: 5px;
+            font-size: 0.9rem;
+            animation: pulseIcon 1.5s infinite;
         }
         
         .new-count-badge {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
             color: white;
-            padding: 1px 4px;
+            padding: 2px 6px;
             border-radius: 10px;
-            font-size: 0.6rem;
+            font-size: 0.8rem;
+            font-weight: bold;
             margin-left: 3px;
+            animation: pulseBadge 2s infinite;
+        }
+        
+        .time-remaining-tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            z-index: 100;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            display: none;
+        }
+        
+        .modal-content button {
+            padding: 6px 12px;
+            font-size: 0.9rem;
         }
         
         /* ============================================ */
-        /* TAILLE PC / TV 32" - TEXTE NORMAL */
+        /* VERSION SMARTPHONE - Adaptation défilement */
         /* ============================================ */
-        @media (min-width: 1024px) {
-            .tv-header h1 { font-size: 1.8rem; }
-            .tv-time { font-size: 1.5rem; padding: 8px 15px; }
-            .tv-date { font-size: 1rem; }
-            .table-header { font-size: 1rem; padding: 10px 3px; }
-            .table-row { font-size: 0.95rem; min-height: 42px; }
-            .equipe-name { font-size: 0.85rem; }
-            .tv-status { font-size: 0.85rem; }
-            .refresh-btn { font-size: 0.9rem; padding: 6px 12px; }
-            .table-cell { padding: 6px 2px; }
-        }
-        
-        /* Version très grand écran (TV 55"+) */
-        @media (min-width: 1600px) {
-            .table-header { font-size: 1.2rem; }
-            .table-row { font-size: 1.1rem; min-height: 50px; }
-            .equipe-name { font-size: 1rem; }
-        }
-        
-        /* Smartphone - garde la possibilité de scroller */
         @media (max-width: 768px) {
-            .table-header, .rows-container {
-                min-width: 750px;
+            .table-header {
+                font-size: 0.7rem;
+                padding: 6px 2px;
+            }
+            .table-row {
+                font-size: 0.7rem;
+                min-height: 32px;
+            }
+            .equipe-name {
+                font-size: 0.65rem;
+            }
+            .tv-header h1 {
+                font-size: 1rem;
+            }
+            .tv-time {
+                font-size: 0.9rem;
+                padding: 4px 8px;
+            }
+            .tv-date {
+                font-size: 0.7rem;
+            }
+            .tv-status {
+                font-size: 0.65rem;
+                padding: 4px 8px;
+                height: auto;
+            }
+            .refresh-btn {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+        }
+        
+        /* VERSION TRÈS GRAND ÉCRAN (TV 55"+) */
+        @media (min-width: 1600px) {
+            .table-header {
+                font-size: 1.3rem;
+            }
+            .table-row {
+                font-size: 1.2rem;
+                min-height: 50px;
+            }
+            .equipe-name {
+                font-size: 1.1rem;
             }
         }
         
@@ -389,11 +584,11 @@
         
         <div class="tv-main-area">
             <div class="table-wrapper">
-                <!-- En-tête séparé -->
+                <!-- En-tête fixe -->
                 <div class="table-header" id="tableHeader">
                     <div>Type</div><div>Client</div><div>Projet</div><div>Imp</div><div>Lieu</div><div>Date</div><div>Heure</div><div>Équipe</div><div>Véhicule</div>
                 </div>
-                <!-- Corps du tableau avec défilement -->
+                <!-- Corps avec défilement -->
                 <div class="table-scroll-container" id="scrollContainer">
                     <div class="rows-container" id="rowsContainer"></div>
                 </div>
@@ -408,35 +603,100 @@
                     <span class="status-indicator" id="statusIndicator"></span>
                     <span id="statusText">Vérification...</span>
                 </span>
-                <span id="newClientsIndicator" style="margin-left: 8px; display: none;">
+                <span id="newClientsIndicator" style="margin-left: 15px; display: none;">
                     🆕 <span id="newClientsCount">0</span> nouveau(x)
                     <span class="new-count-badge" id="newCountBadge">0</span>
                 </span>
             </div>
             <div>
-                <button id="refreshBtn" class="refresh-btn">🔄 ACTUALISER</button>
-                <button onclick="showEditLinkModal()" class="btn-outline-light ms-2" style="background:transparent;border:1px solid white;color:white;padding:4px 8px;border-radius:5px;margin-left:5px">🔗 Lien</button>
+                <button id="refreshBtn" class="refresh-btn">
+                    <span>🔄</span> ACTUALISER
+                </button>
+                <button onclick="showEditLinkModal()" class="btn-outline-light ms-2">
+                    🔗 Éditer lien
+                </button>
+                <button onclick="showHelpModal()" class="btn-outline-info ms-2">
+                    ❓ Aide
+                </button>
             </div>
-            <div id="lastUpdated">MAJ: <span id="lastUpdateTime">--:--</span></div>
+            <div id="lastUpdated">
+                MAJ: <span id="lastUpdateTime">--:--</span>
+            </div>
         </div>
         
-        <div class="warning-message" id="warningMessage" style="display:none">⚠️ TROP DE LIGNES</div>
-        <div id="loading" class="loading-overlay d-none"><div class="spinner-border text-primary"></div><p>Chargement...</p></div>
+        <div class="warning-message" id="warningMessage">
+            ⚠️ TROP DE LIGNES - Réduire le nombre d'interventions
+        </div>
+        
+        <div id="loading" class="loading-overlay d-none">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3 text-white" style="font-size: 1.2rem;">Chargement...</p>
+        </div>
+        
         <div id="notification" class="notification"></div>
         
+        <!-- MODAL D'ÉDITION DE LIEN -->
         <div id="editLinkModal" class="connection-modal">
             <div class="modal-content">
-                <h3 style="color:#3498db">✏️ Mettre à jour le lien</h3>
-                <div style="text-align:left;margin:10px 0">
-                    <label>Lien actuel :</label>
-                    <div style="background:#f8f9fa;padding:6px;border-radius:4px;font-size:0.7rem;word-break:break-all" id="currentLinkDisplay"></div>
-                    <label style="margin-top:10px">Nouveau lien :</label>
-                    <input type="text" id="newSheetLink" style="width:100%;padding:6px;border:1px solid #3498db;border-radius:4px">
+                <h3 style="color: #3498db;">✏️ Mettre à jour le lien Google Sheets</h3>
+                <div style="text-align: left; margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem;">Lien actuel :</label>
+                    <div style="background: #f8f9fa; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.8rem; word-break: break-all; margin-bottom: 15px;" id="currentLinkDisplay">Chargement...</div>
+                    
+                    <label for="newSheetLink" style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem;">Nouveau lien Google Sheets :</label>
+                    <input type="text" id="newSheetLink" style="width: 100%; padding: 8px; border: 2px solid #3498db; border-radius: 4px; font-size: 0.9rem;" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+                    
+                    <div style="margin-top: 8px; font-size: 0.85rem; color: #7f8c8d;">
+                        <strong>Format requis :</strong> doit se terminer par <code>pub?output=csv</code>
+                    </div>
                 </div>
-                <div id="linkStatus" style="padding:6px;border-radius:4px;margin:8px 0;display:none"></div>
-                <div>
-                    <button onclick="saveNewLink()" class="btn btn-success" style="font-size:0.7rem;padding:4px 8px">💾 Enregistrer</button>
-                    <button onclick="hideEditLinkModal()" class="btn btn-secondary" style="font-size:0.7rem;padding:4px 8px">Fermer</button>
+                
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 4px; margin: 12px 0; text-align: left; font-size: 0.9rem;">
+                    <strong>📋 Comment obtenir le nouveau lien :</strong>
+                    <ol style="margin: 8px 0; padding-left: 18px;">
+                        <li>Ouvrir Google Sheets</li>
+                        <li><strong>Fichier → Partager → Publier sur le web</strong></li>
+                        <li>Sélectionner <strong>"Feuille de calcul"</strong></li>
+                        <li>Choisir <strong>"Valeurs séparées par des virgules (.csv)"</strong></li>
+                        <li>Cocher <strong>"Republier le contenu lors de la modification"</strong></li>
+                        <li>Cliquer sur <strong>"PUBLIER"</strong></li>
+                        <li>Copier le nouveau lien qui apparaît</li>
+                    </ol>
+                </div>
+                
+                <div id="linkStatus" style="padding: 8px; border-radius: 4px; margin: 12px 0; display: none; font-size: 0.9rem;"></div>
+                
+                <div style="margin-top: 15px;">
+                    <button onclick="saveNewLink()" class="btn btn-success" style="font-size: 0.9rem; padding: 6px 12px;">💾 Enregistrer & Tester</button>
+                    <button onclick="testCurrentLink()" class="btn btn-primary" style="margin-left: 8px; font-size: 0.9rem; padding: 6px 12px;">🔍 Tester lien actuel</button>
+                    <button onclick="hideEditLinkModal()" class="btn btn-secondary" style="margin-left: 8px; font-size: 0.9rem; padding: 6px 12px;">Fermer</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAL D'AIDE -->
+        <div id="helpModal" class="connection-modal">
+            <div class="modal-content">
+                <h3 style="color: #2c3e50; font-size: 1.3rem;">❓ Aide - Problèmes de connexion</h3>
+                <div style="text-align: left; line-height: 1.5; font-size: 0.9rem;">
+                    <h4 style="color: #e74c3c; font-size: 1.1rem;">🚨 Le lien ne fonctionne plus ?</h4>
+                    <div style="background: #fff3cd; padding: 12px; border-radius: 4px; margin: 12px 0; border-left: 3px solid #ffc107;">
+                        <strong>Cause :</strong> Google Sheets désactive les liens après 7 jours d'inactivité.
+                    </div>
+                    <h5 style="color: #3498db; margin-top: 15px; font-size: 1rem;">✅ Solution :</h5>
+                    <ol style="padding-left: 18px;">
+                        <li>Cliquez sur <strong>"🔗 Éditer lien"</strong></li>
+                        <li>Suivez les 7 étapes affichées</li>
+                        <li>Collez le NOUVEAU lien</li>
+                        <li>Cliquez sur <strong>"Enregistrer & Tester"</strong></li>
+                    </ol>
+                    <div style="background: #d4edda; padding: 12px; border-radius: 4px; margin: 15px 0; border-left: 3px solid #28a745;">
+                        <strong>💡 Prévention :</strong> Ouvrez votre Google Sheets au moins une fois par semaine.
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button onclick="hideHelpModal()" class="btn btn-primary" style="font-size: 0.9rem; padding: 6px 12px;">Compris !</button>
+                    <button onclick="showEditLinkModal()" class="btn btn-success" style="margin-left: 8px; font-size: 0.9rem; padding: 6px 12px;">🔗 Ouvrir l'éditeur</button>
                 </div>
             </div>
         </div>
@@ -446,12 +706,17 @@
         // ============================================
         // CONFIGURATION
         // ============================================
+        
         const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSg3azNidCrk7DOWOCJPCjoplrmuMB9LUs876C4EcRWyePwzBpE8CRbEQSreOwHUC0x6Ux9w8HTvu7/pub?gid=432489701&single=true&output=csv';
         
         const AUTO_REFRESH_MINUTES = 5;
         const HIGHLIGHT_DURATION = 60 * 60 * 1000;
         
         let GOOGLE_SHEET_URL = localStorage.getItem('saved_sheet_url') || DEFAULT_SHEET_URL;
+        
+        const MAX_ROWS_VISIBLE = 18;
+        const MIN_ROW_HEIGHT = 35;
+        const MAX_ROW_HEIGHT = 70;
         
         let previousData = [];
         let newClients = new Map();
@@ -474,7 +739,7 @@
         }
         
         // ============================================
-        // FONCTIONS
+        // FONCTIONS DE BASE
         // ============================================
         
         function updateClock() {
@@ -485,24 +750,33 @@
             }).replace(/^\w/, c => c.toUpperCase());
         }
         
-        function showNotification(msg) {
-            const n = document.getElementById('notification');
-            n.textContent = msg;
-            n.style.display = 'block';
-            setTimeout(() => n.style.display = 'none', 3000);
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 3000);
         }
         
-        function updateConnectionStatus(status, msg) {
-            const indicator = document.getElementById('statusIndicator');
-            const text = document.getElementById('statusText');
+        function updateConnectionStatus(status, message = '') {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
             connectionStatus = status;
-            if(indicator) indicator.style.backgroundColor = status === 'connected' ? '#2ecc71' : (status === 'disconnected' ? '#e74c3c' : '#f39c12');
-            if(text) text.textContent = status === 'connected' ? 'Connecté' : (status === 'disconnected' ? 'Déconnecté' : 'Vérification...');
-            if(msg) console.log(msg);
+            if (statusIndicator) {
+                statusIndicator.style.backgroundColor = status === 'connected' ? '#2ecc71' : (status === 'disconnected' ? '#e74c3c' : '#f39c12');
+            }
+            if (statusText) {
+                switch(status) {
+                    case 'connected': statusText.textContent = 'Connecté'; break;
+                    case 'disconnected': statusText.textContent = 'Déconnecté'; break;
+                    case 'checking': statusText.textContent = 'Vérification...'; break;
+                }
+            }
+            if (message) console.log(message);
         }
         
         function hideAllModals() {
             document.getElementById('editLinkModal').style.display = 'none';
+            document.getElementById('helpModal').style.display = 'none';
         }
         
         function showEditLinkModal() {
@@ -514,100 +788,230 @@
         }
         
         function hideEditLinkModal() { hideAllModals(); }
+        function showHelpModal() { hideAllModals(); document.getElementById('helpModal').style.display = 'flex'; }
+        function hideHelpModal() { hideAllModals(); }
+        
+        function calculateOptimalRowHeight(rowCount) {
+            const headerHeight = 80;
+            const statusHeight = 50;
+            const tableHeaderHeight = 45;
+            const padding = 16;
+            const windowHeight = window.innerHeight;
+            const availableHeightForRows = windowHeight - headerHeight - statusHeight - tableHeaderHeight - padding;
+            
+            let rowHeight = Math.floor(availableHeightForRows / rowCount);
+            if (rowHeight > MAX_ROW_HEIGHT) rowHeight = MAX_ROW_HEIGHT;
+            else if (rowHeight < MIN_ROW_HEIGHT) {
+                rowHeight = MIN_ROW_HEIGHT;
+                if (rowCount > MAX_ROWS_VISIBLE) document.getElementById('warningMessage').style.display = 'block';
+            } else {
+                document.getElementById('warningMessage').style.display = 'none';
+            }
+            
+            let fontSize = 0.9 + (rowHeight / 130);
+            if (fontSize > 1.4) fontSize = 1.4;
+            if (fontSize < 0.8) fontSize = 0.8;
+            let headerFontSize = 1.0 + (rowHeight / 110);
+            if (headerFontSize > 1.5) headerFontSize = 1.5;
+            if (headerFontSize < 1.0) headerFontSize = 1.0;
+            
+            return {
+                rowHeight: rowHeight,
+                fontSize: fontSize.toFixed(1) + 'rem',
+                headerFontSize: headerFontSize.toFixed(1) + 'rem',
+                padding: Math.max(2, Math.floor(rowHeight / 14)) + 'px',
+                fitsPerfectly: rowHeight >= 40
+            };
+        }
+        
+        function applyOptimalDimensions(sizes, rowCount) {
+            const allRows = document.querySelectorAll('.table-row');
+            const header = document.querySelector('.table-header');
+            allRows.forEach(row => {
+                row.style.height = sizes.rowHeight + 'px';
+                row.style.fontSize = sizes.fontSize;
+                row.style.minHeight = sizes.rowHeight + 'px';
+                const cells = row.querySelectorAll('.table-cell');
+                cells.forEach(cell => {
+                    cell.style.padding = sizes.padding + ' 2px';
+                    const text = cell.textContent || '';
+                    if (text.length > 20) {
+                        cell.classList.add('long-text');
+                        cell.style.fontSize = '0.85em';
+                    } else {
+                        cell.classList.remove('long-text');
+                        cell.style.fontSize = '';
+                    }
+                });
+            });
+            if (header) {
+                header.style.fontSize = sizes.headerFontSize;
+                header.style.padding = sizes.padding + ' 3px';
+            }
+        }
         
         function saveHighlightState() {
             try {
                 localStorage.setItem('newClients', JSON.stringify(Array.from(newClients.entries())));
                 localStorage.setItem('updatedTimes', JSON.stringify(Array.from(updatedTimes.entries())));
-            } catch(e) {}
+            } catch (e) {}
         }
         
         function loadHighlightState() {
             try {
                 const savedNewClients = localStorage.getItem('newClients');
                 const savedUpdatedTimes = localStorage.getItem('updatedTimes');
-                if(savedNewClients) newClients = new Map(JSON.parse(savedNewClients));
-                if(savedUpdatedTimes) updatedTimes = new Map(JSON.parse(savedUpdatedTimes));
-            } catch(e) {}
+                if (savedNewClients) newClients = new Map(JSON.parse(savedNewClients));
+                if (savedUpdatedTimes) updatedTimes = new Map(JSON.parse(savedUpdatedTimes));
+            } catch (e) {}
         }
         
         function cleanOldHighlights() {
             const now = Date.now();
             let cleaned = false;
-            for(const [id, ts] of newClients) if(now - ts > HIGHLIGHT_DURATION) { newClients.delete(id); cleaned = true; }
-            for(const [id, ts] of updatedTimes) if(now - ts > HIGHLIGHT_DURATION) { updatedTimes.delete(id); cleaned = true; }
-            if(cleaned) { saveHighlightState(); updateNewClientsIndicator(); }
+            for (const [rowId, timestamp] of newClients.entries()) {
+                if (now - timestamp > HIGHLIGHT_DURATION) { newClients.delete(rowId); cleaned = true; }
+            }
+            for (const [rowId, timestamp] of updatedTimes.entries()) {
+                if (now - timestamp > HIGHLIGHT_DURATION) { updatedTimes.delete(rowId); cleaned = true; }
+            }
+            if (cleaned) { saveHighlightState(); updateNewClientsIndicator(); }
         }
         
         function updateNewClientsIndicator() {
             const indicator = document.getElementById('newClientsIndicator');
-            const countEl = document.getElementById('newClientsCount');
+            const countElement = document.getElementById('newClientsCount');
             const badge = document.getElementById('newCountBadge');
-            const total = newClients.size + updatedTimes.size;
-            if(total > 0) {
+            const totalNew = newClients.size + updatedTimes.size;
+            if (totalNew > 0) {
                 indicator.style.display = 'inline';
-                countEl.textContent = total;
-                badge.textContent = total;
+                countElement.textContent = totalNew;
+                badge.textContent = totalNew;
+                indicator.title = `${newClients.size} nouveau(x) client(s), ${updatedTimes.size} heure(s) modifiée(s)`;
             } else {
                 indicator.style.display = 'none';
             }
         }
         
-        function detectChanges(currentRows) {
-            if(previousData.length === 0) { previousData = currentRows.slice(); return; }
+        function detectChanges(currentData) {
             const now = Date.now();
-            const prevMap = new Map(previousData.map(r => [r.uniqueId, r]));
-            let newAdded = 0, timesUp = 0;
+            const currentRows = currentData.rows;
+            if (previousData.length === 0) { previousData = currentRows.slice(); return; }
             
-            currentRows.forEach(row => {
-                const id = row.uniqueId;
-                if(!prevMap.has(id)) {
-                    const similar = previousData.find(r => r.client === row.client && r.projet === row.projet && r.date === row.date);
-                    if(similar && similar.heure !== row.heure) {
-                        updatedTimes.set(id, now);
-                        timesUp++;
+            const previousMap = new Map();
+            previousData.forEach(row => previousMap.set(row.uniqueId, row));
+            let newClientsAdded = 0, timesUpdated = 0;
+            
+            currentRows.forEach(currentRow => {
+                const rowId = currentRow.uniqueId;
+                if (!previousMap.has(rowId)) {
+                    const similarRow = previousData.find(row => row.client === currentRow.client && row.projet === currentRow.projet && row.date === currentRow.date);
+                    if (similarRow && similarRow.heure !== currentRow.heure) {
+                        updatedTimes.set(rowId, now);
+                        timesUpdated++;
                     } else {
-                        newClients.set(id, now);
-                        newAdded++;
+                        newClients.set(rowId, now);
+                        newClientsAdded++;
                     }
                 } else {
-                    const prev = prevMap.get(id);
-                    if(prev.heure !== row.heure) {
-                        if(newClients.has(id)) newClients.delete(id);
-                        updatedTimes.set(id, now);
-                        timesUp++;
+                    const previousRow = previousMap.get(rowId);
+                    if (previousRow.heure !== currentRow.heure) {
+                        if (newClients.has(rowId)) newClients.delete(rowId);
+                        updatedTimes.set(rowId, now);
+                        timesUpdated++;
                     }
                 }
             });
             
             const currentIds = new Set(currentRows.map(r => r.uniqueId));
-            for(const [id] of newClients) if(!currentIds.has(id)) newClients.delete(id);
-            for(const [id] of updatedTimes) if(!currentIds.has(id)) updatedTimes.delete(id);
+            for (const [rowId] of newClients.entries()) if (!currentIds.has(rowId)) newClients.delete(rowId);
+            for (const [rowId] of updatedTimes.entries()) if (!currentIds.has(rowId)) updatedTimes.delete(rowId);
             
             saveHighlightState();
             updateNewClientsIndicator();
             
-            if(newAdded > 0 || timesUp > 0) {
-                let msg = '';
-                if(newAdded > 0) msg += `${newAdded} nouveau(x) client(s) `;
-                if(timesUp > 0) { if(msg) msg += 'et '; msg += `${timesUp} heure(s) modifiée(s)`; }
-                showNotification(`🎯 ${msg}`);
+            if (newClientsAdded > 0 || timesUpdated > 0) {
+                let message = '';
+                if (newClientsAdded > 0) message += `${newClientsAdded} nouveau(x) client(s) `;
+                if (timesUpdated > 0) { if (message) message += 'et '; message += `${timesUpdated} heure(s) modifiée(s)`; }
+                showNotification(`🎯 ${message}`);
             }
             previousData = currentRows.slice();
+        }
+        
+        function findSimilarRow(previousRows, currentRow) {
+            return previousRows.find(row => row.client === currentRow.client && row.projet === currentRow.projet && row.date === currentRow.date);
+        }
+        
+        function getRemainingTime(timestamp) {
+            const remaining = HIGHLIGHT_DURATION - (Date.now() - timestamp);
+            if (remaining <= 0) return 'Terminé';
+            return `${Math.ceil(remaining / 60000)} min`;
+        }
+        
+        async function saveNewLink() {
+            const newLink = document.getElementById('newSheetLink').value.trim();
+            const statusDiv = document.getElementById('linkStatus');
+            if (!newLink) { showLinkStatus('⚠️ Veuillez coller un lien', 'warning'); return; }
+            if (!newLink.startsWith('https://docs.google.com/spreadsheets/d/e/')) {
+                showLinkStatus('❌ Format invalide', 'error');
+                return;
+            }
+            showLinkStatus('🔍 Test du nouveau lien...', 'info');
+            const isValid = await testLink(newLink);
+            if (isValid) {
+                GOOGLE_SHEET_URL = newLink;
+                localStorage.setItem('saved_sheet_url', newLink);
+                showLinkStatus('✅ Lien sauvegardé et testé !', 'success');
+                setTimeout(() => { hideEditLinkModal(); showNotification('Nouveau lien appliqué'); loadData(); }, 2000);
+            } else {
+                showLinkStatus('❌ Le lien ne fonctionne pas.', 'error');
+            }
+        }
+        
+        async function testCurrentLink() {
+            showLinkStatus('🔍 Test du lien actuel...', 'info');
+            const isValid = await testLink(GOOGLE_SHEET_URL);
+            if (isValid) {
+                showLinkStatus('✅ Lien actuel fonctionnel !', 'success');
+                showNotification('✅ Connexion active');
+            } else {
+                showLinkStatus('❌ Lien actuel invalide. Mettez à jour.', 'error');
+            }
+        }
+        
+        async function testLink(url) {
+            try {
+                const timestamp = new Date().getTime();
+                const urlWithNoCache = url + (url.includes('?') ? '&' : '?') + '_=' + timestamp;
+                const proxyUrl = 'https://corsproxy.io/?';
+                const response = await fetch(proxyUrl + encodeURIComponent(urlWithNoCache), { method: 'HEAD', timeout: 10000 });
+                return response.ok;
+            } catch (error) { return false; }
+        }
+        
+        function showLinkStatus(message, type) {
+            const statusDiv = document.getElementById('linkStatus');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            const styles = { success: '#d4edda,#155724', error: '#f8d7da,#721c24', warning: '#fff3cd,#856404', info: '#d1ecf1,#0c5460' };
+            const [bg, color] = styles[type].split(',');
+            statusDiv.style.background = bg;
+            statusDiv.style.color = color;
         }
         
         function parseCSV(text) {
             const rows = [];
             const lines = text.split(/\r?\n/);
-            for(let line of lines) {
-                if(!line.trim()) continue;
+            for (let line of lines) {
+                if (!line.trim()) continue;
                 const row = [];
                 let current = '', inQuotes = false;
-                for(let i=0; i<line.length; i++) {
-                    const c = line[i];
-                    if(c === '"') inQuotes = !inQuotes;
-                    else if(c === ',' && !inQuotes) { row.push(current.trim()); current = ''; }
-                    else current += c;
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (char === '"') inQuotes = !inQuotes;
+                    else if (char === ',' && !inQuotes) { row.push(current.trim()); current = ''; }
+                    else current += char;
                 }
                 row.push(current.trim());
                 rows.push(row);
@@ -616,89 +1020,76 @@
         }
         
         function processDataWithFilter(rows) {
-            const now = new Date(); now.setHours(0,0,0,0);
+            const now = new Date(); now.setHours(0, 0, 0, 0);
             const futureRows = [];
             let todayCount = 0;
             let startIndex = 0;
-            
-            if(rows.length > 0) {
+            if (rows.length > 0) {
                 const firstRow = rows[0];
                 const headerKeywords = ['type', 'client', 'projet', 'lieu', 'date', 'heure', 'équipe', 'equipe', 'véhicule'];
-                const isHeader = firstRow.some(cell => cell && typeof cell === 'string' && headerKeywords.some(k => cell.toLowerCase().includes(k)));
-                if(isHeader) startIndex = 1;
+                const isHeader = firstRow.some(cell => cell && typeof cell === 'string' && headerKeywords.some(keyword => cell.toLowerCase().includes(keyword)));
+                if (isHeader) startIndex = 1;
             }
             
-            const TYPE=0, CLIENT=1, PROJET=2, IMP=21, LIEU=3, DATE=4, HEURE=5, VEHICULE=22;
-            const EQUIPE_START=6, EQUIPE_END=20;
+            const TYPE = 0, CLIENT = 1, PROJET = 2, IMP = 21, LIEU = 3, DATE = 4, HEURE = 5, VEHICULE = 22;
+            const EQUIPE_START = 6, EQUIPE_END = 20;
             const maxRows = 20;
             let rowCount = 0;
             
-            for(let i=startIndex; i<rows.length && rowCount<maxRows; i++) {
+            for (let i = startIndex; i < rows.length && rowCount < maxRows; i++) {
                 const row = rows[i];
-                if(row.length <= DATE) continue;
+                if (row.length <= DATE) continue;
                 const dateStr = row[DATE] || '';
-                if(!dateStr) continue;
+                if (!dateStr) continue;
                 
                 let dateObj = null, isToday = false;
-                if(dateStr.includes('/')) {
+                if (dateStr.includes('/')) {
                     try {
                         const parts = dateStr.split('/');
-                        if(parts.length === 3) {
-                            const day = parseInt(parts[0]), month = parseInt(parts[1])-1, year = parseInt(parts[2]);
-                            if(!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                        if (parts.length === 3) {
+                            const day = parseInt(parts[0], 10), month = parseInt(parts[1], 10) - 1, year = parseInt(parts[2], 10);
+                            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
                                 dateObj = new Date(year, month, day);
-                                dateObj.setHours(0,0,0,0);
-                                if(dateObj < now) continue;
+                                dateObj.setHours(0, 0, 0, 0);
+                                if (dateObj < now) continue;
                                 isToday = dateObj.getTime() === now.getTime();
                             }
                         }
-                    } catch(e) { continue; }
+                    } catch (e) { continue; }
                 }
                 
-                if(dateObj) {
+                if (dateObj) {
                     const equipeMembers = [];
-                    for(let j=EQUIPE_START; j<=EQUIPE_END && j<row.length; j++) {
+                    for (let j = EQUIPE_START; j <= EQUIPE_END && j < row.length; j++) {
                         const member = row[j] || '';
-                        if(member.trim()) equipeMembers.push(member.trim());
+                        if (member.trim() !== '') equipeMembers.push(member.trim());
                     }
                     
                     futureRows.push({
                         type: row[TYPE] || '', client: row[CLIENT] || '', projet: row[PROJET] || '', imp: row[IMP] || '',
-                        lieu: row[LIEU] || '', date: dateStr, heure: row[HEURE] || '', equipeMembers, vehicule: row[VEHICULE] || '',
-                        dateObj, isToday, uniqueId: `${row[CLIENT]}|${row[PROJET]}|${dateStr}|${row[HEURE]}`
+                        lieu: row[LIEU] || '', date: dateStr, heure: row[HEURE] || '', equipeMembers: equipeMembers,
+                        vehicule: row[VEHICULE] || '', dateObj: dateObj, isToday: isToday,
+                        uniqueId: `${row[CLIENT]}|${row[PROJET]}|${dateStr}|${row[HEURE]}`
                     });
                     rowCount++;
-                    if(isToday) todayCount++;
+                    if (isToday) todayCount++;
                 }
             }
-            futureRows.sort((a,b) => a.dateObj - b.dateObj);
-            return { rows: futureRows, todayCount };
-        }
-        
-        function formatDate(dateStr) {
-            if(!dateStr) return '-';
-            try {
-                const parts = dateStr.split('/');
-                if(parts.length === 3) {
-                    const d = new Date(parts[2], parts[1]-1, parts[0]);
-                    const days = ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'];
-                    return `${days[d.getDay()]}_${dateStr}`;
-                }
-            } catch(e) {}
-            return dateStr;
+            futureRows.sort((a, b) => a.dateObj - b.dateObj);
+            return { rows: futureRows, todayCount: todayCount };
         }
         
         function displayData(data) {
-            const container = document.getElementById('rowsContainer');
+            const rowsContainer = document.getElementById('rowsContainer');
             const totalRows = document.getElementById('totalRows');
-            const todayCountSpan = document.getElementById('todayCount');
+            const todayCount = document.getElementById('todayCount');
             
-            container.innerHTML = '';
+            rowsContainer.innerHTML = '';
             totalRows.textContent = data.rows.length;
-            todayCountSpan.textContent = data.todayCount;
+            todayCount.textContent = data.todayCount;
             
-            if(data.rows.length === 0) {
-                container.innerHTML = `<div class="table-row"><div class="table-cell" style="grid-column:1/-1;text-align:center">Aucune intervention future</div></div>`;
+            if (data.rows.length === 0) {
+                rowsContainer.innerHTML = `<div class="table-row"><div class="table-cell" style="grid-column: 1 / -1; text-align: center; font-size: 1.2rem; color: #95a5a6;">Aucune intervention future</div></div>`;
                 return;
             }
             
@@ -706,91 +1097,109 @@
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'table-row';
                 
-                if(row.isToday) {
-                    rowDiv.classList.add(!row.type || row.type.trim() === '' || row.type === '-' ? 'today-row-empty-type' : 'today-row');
-                } else if(!row.type || row.type.trim() === '' || row.type === '-') {
-                    rowDiv.classList.add('empty-type-row');
+                if (row.isToday) {
+                    const typeEmpty = !row.type || row.type.trim() === '' || row.type === '-';
+                    rowDiv.classList.add(typeEmpty ? 'today-row-empty-type' : 'today-row');
+                } else {
+                    if (!row.type || row.type.trim() === '' || row.type === '-') rowDiv.classList.add('empty-type-row');
                 }
                 
                 // Type
                 const typeCell = document.createElement('div');
                 typeCell.className = 'table-cell';
                 typeCell.textContent = row.type || '-';
-                if(row.type && row.type.toLowerCase().includes('montage')) typeCell.classList.add('triangle-cell');
-                if(!row.type) typeCell.classList.add('empty-cell');
+                if (row.type && row.type.toLowerCase().includes('montage')) typeCell.classList.add('triangle-cell');
+                if (!row.type) typeCell.classList.add('empty-cell');
                 rowDiv.appendChild(typeCell);
                 
                 // Client
                 const clientCell = document.createElement('div');
                 clientCell.className = 'table-cell';
-                if(newClients.has(row.uniqueId) && !updatedTimes.has(row.uniqueId)) clientCell.classList.add('new-client-highlight');
+                if (newClients.has(row.uniqueId) && !updatedTimes.has(row.uniqueId)) {
+                    clientCell.classList.add('new-client-highlight');
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'time-remaining-tooltip';
+                    tooltip.textContent = `Nouveau client - ${getRemainingTime(newClients.get(row.uniqueId))}`;
+                    clientCell.appendChild(tooltip);
+                }
                 clientCell.textContent = row.client || '-';
-                if(!row.client) clientCell.classList.add('empty-cell');
+                if (!row.client) clientCell.classList.add('empty-cell');
                 rowDiv.appendChild(clientCell);
                 
                 // Projet
                 const projetCell = document.createElement('div');
                 projetCell.className = 'table-cell';
                 projetCell.textContent = row.projet || '-';
-                if(!row.projet) projetCell.classList.add('empty-cell');
+                if (!row.projet) projetCell.classList.add('empty-cell');
                 rowDiv.appendChild(projetCell);
                 
                 // Imp
                 const impCell = document.createElement('div');
                 impCell.className = 'table-cell';
                 impCell.textContent = row.imp || '-';
-                if(!row.imp) impCell.classList.add('empty-cell');
+                if (!row.imp) impCell.classList.add('empty-cell');
                 rowDiv.appendChild(impCell);
                 
                 // Lieu
                 const lieuCell = document.createElement('div');
                 lieuCell.className = 'table-cell left-align';
                 lieuCell.textContent = row.lieu || '-';
-                if(!row.lieu) lieuCell.classList.add('empty-cell');
+                if (!row.lieu) lieuCell.classList.add('empty-cell');
                 rowDiv.appendChild(lieuCell);
                 
                 // Date
                 const dateCell = document.createElement('div');
                 dateCell.className = 'table-cell left-align';
-                dateCell.textContent = formatDate(row.date);
-                if(!row.date) dateCell.classList.add('empty-cell');
+                if (row.date) {
+                    try {
+                        const dateParts = row.date.split('/');
+                        if (dateParts.length === 3) {
+                            const dateObj = new Date(parseInt(dateParts[2], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[0], 10));
+                            const dayAbbreviations = ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'];
+                            dateCell.textContent = `${dayAbbreviations[dateObj.getDay()]}_${row.date}`;
+                        } else { dateCell.textContent = row.date; }
+                    } catch (e) { dateCell.textContent = row.date; }
+                } else { dateCell.textContent = '-'; dateCell.classList.add('empty-cell'); }
                 rowDiv.appendChild(dateCell);
                 
                 // Heure
                 const heureCell = document.createElement('div');
                 heureCell.className = 'table-cell';
-                if(updatedTimes.has(row.uniqueId)) heureCell.classList.add('updated-time-highlight');
+                if (updatedTimes.has(row.uniqueId)) {
+                    heureCell.classList.add('updated-time-highlight');
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'time-remaining-tooltip';
+                    tooltip.textContent = `Heure modifiée - ${getRemainingTime(updatedTimes.get(row.uniqueId))}`;
+                    heureCell.appendChild(tooltip);
+                }
                 heureCell.textContent = row.heure || '-';
-                if(!row.heure) heureCell.classList.add('empty-cell');
+                if (!row.heure) heureCell.classList.add('empty-cell');
                 rowDiv.appendChild(heureCell);
                 
                 // Équipe
                 const equipeCell = document.createElement('div');
                 equipeCell.className = 'table-cell';
-                if(row.equipeMembers && row.equipeMembers.length > 0) {
-                    const containerEquipe = document.createElement('div');
-                    containerEquipe.className = 'equipe-names';
-                    row.equipeMembers.forEach(m => {
+                if (row.equipeMembers && row.equipeMembers.length > 0) {
+                    const equipeContainer = document.createElement('div');
+                    equipeContainer.className = 'equipe-names';
+                    row.equipeMembers.forEach(member => {
                         const nameDiv = document.createElement('div');
                         nameDiv.className = 'equipe-name';
-                        nameDiv.textContent = m;
-                        containerEquipe.appendChild(nameDiv);
+                        nameDiv.textContent = member;
+                        equipeContainer.appendChild(nameDiv);
                     });
-                    equipeCell.appendChild(containerEquipe);
-                } else {
-                    equipeCell.textContent = '-';
-                    equipeCell.classList.add('empty-cell');
-                }
+                    equipeCell.appendChild(equipeContainer);
+                } else { equipeCell.textContent = '-'; equipeCell.classList.add('empty-cell'); }
                 rowDiv.appendChild(equipeCell);
                 
                 // Véhicule
                 const vehiculeCell = document.createElement('div');
                 vehiculeCell.className = 'table-cell';
                 vehiculeCell.textContent = row.vehicule || '-';
-                if(!row.vehicule) vehiculeCell.classList.add('empty-cell');
+                if (!row.vehicule) vehiculeCell.classList.add('empty-cell');
                 rowDiv.appendChild(vehiculeCell);
                 
-                container.appendChild(rowDiv);
+                rowsContainer.appendChild(rowDiv);
             });
         }
         
@@ -798,70 +1207,57 @@
             const loading = document.getElementById('loading');
             try {
                 loading.classList.remove('d-none');
-                updateConnectionStatus('checking', 'Connexion...');
+                updateConnectionStatus('checking', 'Tentative de connexion...');
                 cleanOldHighlights();
                 
-                const timestamp = Date.now();
-                let url = GOOGLE_SHEET_URL;
-                url += (url.includes('?') ? '&' : '?') + '_=' + timestamp;
+                const timestamp = new Date().getTime();
+                const urlWithNoCache = GOOGLE_SHEET_URL + '&_=' + timestamp;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
                 
                 const proxyUrl = 'https://corsproxy.io/?';
-                const response = await fetch(proxyUrl + encodeURIComponent(url));
+                const response = await fetch(proxyUrl + encodeURIComponent(urlWithNoCache), { signal: controller.signal });
+                clearTimeout(timeoutId);
                 
-                if(!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const csvText = await response.text();
-                
-                if(csvText.includes('<!DOCTYPE') || csvText.includes('<html')) throw new Error('Lien expiré');
-                if(!csvText || csvText.trim().length < 10) throw new Error('Fichier vide');
+                if (csvText.includes('<!DOCTYPE') || csvText.includes('<html')) throw new Error('Lien expiré');
+                if (!csvText || csvText.trim().length < 10) throw new Error('Fichier vide');
                 
                 const rows = parseCSV(csvText);
                 const processedData = processDataWithFilter(rows);
-                detectChanges(processedData.rows);
+                detectChanges(processedData);
                 displayData(processedData);
                 
-                document.getElementById('lastUpdateTime').textContent = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-                updateConnectionStatus('connected', `Données chargées (${processedData.rows.length})`);
+                setTimeout(() => {
+                    const sizes = calculateOptimalRowHeight(processedData.rows.length);
+                    applyOptimalDimensions(sizes, processedData.rows.length);
+                }, 100);
                 
-                // Réinitialiser le scroll après chargement
-                const scrollContainer = document.getElementById('scrollContainer');
-                if(scrollContainer) scrollContainer.scrollLeft = 0;
+                document.getElementById('lastUpdateTime').textContent = new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+                updateConnectionStatus('connected', `Données chargées (${processedData.rows.length} interventions)`);
                 
-            } catch(error) {
-                console.error(error);
-                let msg = error.message;
-                updateConnectionStatus('disconnected', msg);
-                document.getElementById('rowsContainer').innerHTML = `<div class="table-row"><div class="table-cell" style="grid-column:1/-1;text-align:center;color:#e74c3c">❌ Erreur: ${msg}<br><button onclick="showEditLinkModal()" style="margin-top:8px">🔗 Éditer le lien</button></div></div>`;
+            } catch (error) {
+                console.error('Erreur:', error);
+                let errorMessage = error.message;
+                if (error.name === 'AbortError') errorMessage = 'Timeout - Pas de réponse';
+                else if (error.message.includes('HTML')) errorMessage = 'LIEN EXPIRÉ - Cliquez sur "🔗 Éditer lien"';
+                
+                updateConnectionStatus('disconnected', errorMessage);
+                showNotification('Erreur: ' + errorMessage);
+                
+                document.getElementById('rowsContainer').innerHTML = `
+                    <div class="table-row">
+                        <div class="table-cell" style="grid-column: 1 / -1; text-align: center; color: #e74c3c;">
+                            ❌ Problème de connexion<br>
+                            <small>${errorMessage}</small><br>
+                            <button onclick="showEditLinkModal()" class="btn btn-warning mt-2">🔗 Éditer le lien</button>
+                        </div>
+                    </div>
+                `;
             } finally {
                 setTimeout(() => loading.classList.add('d-none'), 500);
-            }
-        }
-        
-        async function testLink(url) {
-            try {
-                const proxyUrl = 'https://corsproxy.io/?';
-                const testUrl = proxyUrl + encodeURIComponent(url + '?_=' + Date.now());
-                const res = await fetch(testUrl, { method: 'HEAD' });
-                return res.ok;
-            } catch { return false; }
-        }
-        
-        async function saveNewLink() {
-            const newLink = document.getElementById('newSheetLink').value.trim();
-            const statusDiv = document.getElementById('linkStatus');
-            if(!newLink) { alert('Veuillez coller un lien'); return; }
-            statusDiv.style.display = 'block';
-            statusDiv.style.background = '#d1ecf1';
-            statusDiv.textContent = '🔍 Test...';
-            const ok = await testLink(newLink);
-            if(ok) {
-                GOOGLE_SHEET_URL = newLink;
-                localStorage.setItem('saved_sheet_url', newLink);
-                statusDiv.style.background = '#d4edda';
-                statusDiv.textContent = '✅ Lien sauvegardé !';
-                setTimeout(() => { hideEditLinkModal(); loadData(); }, 1500);
-            } else {
-                statusDiv.style.background = '#f8d7da';
-                statusDiv.textContent = '❌ Lien invalide';
             }
         }
         
@@ -872,7 +1268,13 @@
             setInterval(updateClock, 1000);
             setInterval(cleanOldHighlights, 60000);
             loadData();
-            setInterval(() => { if(connectionStatus === 'connected') loadData(); }, AUTO_REFRESH_MINUTES * 60000);
+            setInterval(() => { if (connectionStatus === 'connected') loadData(); }, AUTO_REFRESH_MINUTES * 60000);
+            window.addEventListener('resize', () => {
+                const rowCount = document.querySelectorAll('.table-row').length;
+                if (rowCount > 0) applyOptimalDimensions(calculateOptimalRowHeight(rowCount), rowCount);
+            });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') hideAllModals(); });
+            document.addEventListener('click', e => { if (e.target.classList.contains('connection-modal')) hideAllModals(); });
             initScrollSync();
         }
         
