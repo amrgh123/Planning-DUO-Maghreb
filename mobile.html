@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planning Équipe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* RÉINITIALISATION COMPLÈTE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            background-color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* CONTENEUR PRINCIPAL MOBILE */
+        .mobile-container {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        /* HEADER MOBILE SIMPLIFIÉ */
+        .mobile-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 10px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .mobile-header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* BOUTONS D'ACTION MOBILE - TOUS SUR LA MÊME LIGNE */
+        .mobile-action-buttons {
+            display: flex;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            justify-content: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .mobile-btn {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .mobile-btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .mobile-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .mobile-btn-info {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+        
+        .mobile-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* CONTENU PRINCIPAL MOBILE */
+        .mobile-content {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* CARTE D'INTERVENTION MOBILE */
+        .intervention-card {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+        
+        /* CARTE AUJOURD'HUI - TYPE TRIANGLE (montage) */
+        .intervention-card.today {
+            background: #e74c3c;
+            color: white !important;
+            animation: pulseToday 2s infinite;
+            border-left: 5px solid #c0392b;
+        }
+        
+        .intervention-card.today .card-field {
+            color: white !important;
+        }
+        
+        .intervention-card.today .empty-cell {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .intervention-card.today .card-type {
+            color: white !important;
+        }
+        
+        .intervention-card.today .client-name {
+            color: white !important;
+        }
+        
+        .intervention-card.today .card-time {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        
+        .intervention-card.today .card-date {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        
+        .intervention-card.today .compact-label,
+        .intervention-card.today .equipe-label {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        
+        .intervention-card.today .equipe-badge {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        
+        /* CARTE AUJOURD'HUI - TYPE VIDE */
+        .intervention-card.today-empty-type {
+            background: #c0392b !important;
+            color: white !important;
+            animation: pulseTodayDark 2s infinite;
+            border-left: 5px solid #962d22;
+        }
+        
+        .intervention-card.today-empty-type .card-field {
+            color: white !important;
+        }
+        
+        .intervention-card.today-empty-type .empty-cell {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .intervention-card.today-empty-type .card-type {
+            color: white !important;
+        }
+        
+        .intervention-card.today-empty-type .client-name {
+            color: white !important;
+        }
+        
+        .intervention-card.today-empty-type .card-time {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        
+        .intervention-card.today-empty-type .card-date {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        
+        .intervention-card.today-empty-type .compact-label,
+        .intervention-card.today-empty-type .equipe-label {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        
+        .intervention-card.today-empty-type .equipe-badge {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+        
+        /* CARTE TYPE VIDE (jours normaux) */
+        .intervention-card.empty-type {
+            background: #f8f9fa;
+            color: #7f8c8d !important;
+        }
+        
+        .intervention-card.empty-type .card-field {
+            color: #7f8c8d !important;
+        }
+        
+        .intervention-card.empty-type .card-type {
+            color: #7f8c8d !important;
+        }
+        
+        .intervention-card.empty-type .client-name {
+            color: #7f8c8d !important;
+        }
+        
+        .intervention-card.empty-type .card-time {
+            color: #95a5a6 !important;
+        }
+        
+        .intervention-card.empty-type .compact-label,
+        .intervention-card.empty-type .equipe-label {
+            color: #95a5a6 !important;
+        }
+        
+        /* HEADER COMPACT - Type / Client / Heure / Date sur la même ligne */
+        .card-header-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            min-height: 45px;
+        }
+        
+        .intervention-card.today .card-header-compact {
+            background: rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .intervention-card.today-empty-type .card-header-compact {
+            background: rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .card-type {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            color: #2c3e50;
+        }
+        
+        .triangle-marker::before {
+            content: "▲";
+            color: #e74c3c;
+            font-size: 0.8rem;
+        }
+        
+        .intervention-card.today .triangle-marker::before {
+            color: white;
+        }
+        
+        .intervention-card.today-empty-type .triangle-marker::before {
+            color: white;
+        }
+        
+        .client-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        
+        /* HEURE DANS LE HEADER */
+        .card-time {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        .card-date {
+            font-weight: 600;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            color: #2c3e50;
+        }
+        
+        /* CORPS DE LA CARTE - SANS HEURE (car déjà dans le header) */
+        .card-body-compact {
+            padding: 12px;
+        }
+        
+        /* LIGNE COMPACTE - TOUS LES ÉLÉMENTS SUR LA MÊME LIGNE */
+        .compact-line {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        /* ÉLÉMENTS COMPACTS */
+        .compact-item {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 8px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .compact-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .compact-value {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-break: break-word;
+            flex: 1;
+        }
+        
+        /* ÉQUIPE + VÉHICULE SUR LA MÊME LIGNE */
+        .equipe-vehicule-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .equipe-section {
+            flex: 2;
+            min-width: 200px;
+        }
+        
+        .vehicule-section {
+            flex: 1;
+            min-width: 100px;
+            text-align: right;
+        }
+        
+        .equipe-label, .vehicule-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .vehicule-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .intervention-card.today .vehicule-value {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .intervention-card.today-empty-type .vehicule-value {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .equipe-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .equipe-badge {
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        /* FOOTER MOBILE SIMPLIFIÉ */
+        .mobile-footer {
+            background: rgba(0,0,0,0.9);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-connected {
+            background-color: #2ecc71;
+            box-shadow: 0 0 6px #2ecc71;
+            animation: pulseConnected 2s infinite;
+        }
+        
+        .status-disconnected {
+            background-color: #e74c3c;
+            box-shadow: 0 0 6px #e74c3c;
+            animation: pulseDisconnected 2s infinite;
+        }
+        
+        .status-checking {
+            background-color: #f39c12;
+            box-shadow: 0 0 6px #f39c12;
+            animation: pulseChecking 1s infinite;
+        }
+        
+        /* ANIMATIONS */
+        @keyframes pulseToday {
+            0% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(231, 76, 60, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+        
+        @keyframes pulseTodayDark {
+            0% {
+                box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(192, 57, 43, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
+            }
+        }
+        
+        @keyframes pulseConnected {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulseDisconnected {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulseChecking {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        
+        /* HIGHLIGHTS POUR L'HEURE DANS LE HEADER */
+        .header-time-highlight {
+            animation: blinkUpdatedTime 1s infinite alternate;
+            position: relative;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            border-radius: 3px;
+            padding: 1px 4px !important;
+            display: inline;
+        }
+        
+        .header-time-highlight::before {
+            content: "🕒";
+            margin-right: 2px;
+            font-size: 0.7rem;
+            animation: pulseIcon 1.5s infinite;
+        }
+        
+        .new-client-highlight {
+            animation: blinkNewClient 1s infinite alternate;
+            position: relative;
+            font-weight: 800 !important;
+            color: #ffffff !important;
+            border-radius: 3px;
+            padding: 1px 4px !important;
+            display: inline;
+        }
+        
+        .new-client-highlight::before {
+            content: "🆕";
+            margin-right: 2px;
+            font-size: 0.7rem;
+            animation: pulseIcon 1.5s infinite;
+        }
+        
+        @keyframes blinkNewClient {
+            0% {
+                background-color: rgba(46, 204, 113, 0.7);
+                box-shadow: 0 0 6px rgba(46, 204, 113, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                background-color: rgba(46, 204, 113, 0.9);
+                box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+                transform: scale(1.02);
+            }
+            100% {
+                background-color: rgba(46, 204, 113, 0.7);
+                box-shadow: 0 0 6px rgba(46, 204, 113, 0.4);
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes blinkUpdatedTime {
+            0% {
+                background-color: rgba(52, 152, 219, 0.7);
+                box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                background-color: rgba(52, 152, 219, 0.9);
+                box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
+                transform: scale(1.02);
+            }
+            100% {
+                background-color: rgba(52, 152, 219, 0.7);
+                box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes pulseIcon {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* LOADING */
+        .mobile-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 26, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        
+        .mobile-loading.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(52, 152, 219, 0.2);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* NOTIFICATION */
+        .mobile-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 3000;
+            display: none;
+            font-size: 0.9rem;
+            animation: slideDown 0.3s ease;
+            text-align: center;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* MODALS MOBILE */
+        .mobile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            z-index: 4000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 15px;
+        }
+        
+        .mobile-modal.active {
+            display: block;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 15px auto;
+            color: #333;
+        }
+        
+        .modal-header {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .modal-title {
+            color: #3498db;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: #95a5a6;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+        
+        /* RESPONSIVE ADJUSTMENTS */
+        @media (max-width: 480px) {
+            .mobile-header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .mobile-action-buttons {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+            
+            .mobile-btn {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+                min-width: 0;
+            }
+            
+            .compact-line {
+                gap: 10px;
+            }
+            
+            .compact-item {
+                min-width: 100px;
+            }
+            
+            .stats {
+                font-size: 0.8rem;
+                gap: 10px;
+            }
+            
+            .card-time {
+                font-size: 0.8rem;
+                margin-right: 6px;
+            }
+            
+            .equipe-vehicule-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .equipe-section, .vehicule-section {
+                min-width: 100%;
+            }
+            
+            .vehicule-section {
+                text-align: left;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .mobile-header {
+                padding: 8px 10px;
+            }
+            
+            .mobile-action-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .mobile-btn {
+                min-width: calc(33.333% - 8px);
+            }
+            
+            .header-left {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .card-time {
+                order: 3;
+                width: 100%;
+                margin-right: 0;
+                margin-top: 2px;
+            }
+            
+            .compact-line {
+                display: block;
+            }
+            
+            .compact-item {
+                width: 100%;
+                min-width: 0;
+            }
+            
+            .card-type {
+                font-size: 0.95rem;
+            }
+            
+            .client-name {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* TOUCH OPTIMIZATIONS */
+        .intervention-card {
+            touch-action: pan-y;
+        }
+        
+        .mobile-content {
+            touch-action: pan-y;
+        }
+        
+        button, .mobile-btn {
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        /* SCROLLBAR STYLING */
+        .mobile-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .mobile-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+        
+        .mobile-content::-webkit-scrollbar-thumb {
+            background: rgba(52, 152, 219, 0.5);
+            border-radius: 2px;
+        }
+        
+        .mobile-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(52, 152, 219, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- HEADER SIMPLIFIÉ (sans horloge) -->
+        <div class="mobile-header">
+            <h1>📅 PLANNING DES PROJETS</h1>
+        </div>
+        
+        <!-- BOUTONS D'ACTION - TOUS SUR LA MÊME LIGNE -->
+        <div class="mobile-action-buttons">
+            <button id="refreshBtn" class="mobile-btn mobile-btn-primary">
+                <span>🔄</span> Actualiser
+            </button>
+            <button onclick="showEditLinkModal()" class="mobile-btn mobile-btn-secondary">
+                <span>🔗</span> Éditer lien
+            </button>
+            <button onclick="showHelpModal()" class="mobile-btn mobile-btn-info">
+                <span>❓</span> Aide
+            </button>
+        </div>
+        
+        <!-- CONTENU PRINCIPAL -->
+        <div class="mobile-content" id="mobileContent">
+            <!-- Les cartes d'intervention seront insérées ici -->
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="mobile-footer">
+            <div class="stats">
+                <div class="stat-item">
+                    <span id="totalRows">0</span> interventions
+                </div>
+                <div class="stat-item">
+                    <span id="todayCount">0</span> aujourd'hui
+                </div>
+                <div class="stat-item" id="newClientsIndicator" style="display: none;">
+                    <span>🆕</span> <span id="newClientsCount">0</span>
+                </div>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Vérification...</span>
+            </div>
+            <div id="lastUpdated">
+                MAJ: <span id="lastUpdateTime">--:--</span>
+            </div>
+        </div>
+        
+        <!-- LOADING OVERLAY -->
+        <div id="mobileLoading" class="mobile-loading">
+            <div class="spinner"></div>
+            <p class="mt-3 text-white" style="font-size: 1rem;">Chargement...</p>
+        </div>
+        
+        <!-- NOTIFICATION -->
+        <div id="mobileNotification" class="mobile-notification"></div>
+        
+        <!-- MODAL ÉDITION DE LIEN -->
+        <div id="editLinkModal" class="mobile-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">✏️ Mettre à jour le lien</h3>
+                    <p style="color: #666; font-size: 0.85rem;">Collez le nouveau lien Google Sheets</p>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="background: #f8f9fa; padding: 8px; border-radius: 6px; margin-bottom: 12px;">
+                        <div style="font-size: 0.75rem; color: #7f8c8d; margin-bottom: 3px;">Lien actuel :</div>
+                        <div id="currentLinkDisplay" style="font-family: monospace; font-size: 0.75rem; word-break: break-all;">
+                            Chargement...
+                        </div>
+                    </div>
+                    
+                    <input type="text" id="newSheetLink" 
+                           style="width: 100%; padding: 10px; border: 2px solid #3498db; border-radius: 6px; font-size: 0.9rem; margin-bottom: 12px;"
+                           placeholder="https://docs.google.com/spreadsheets/...">
+                    
+                    <div id="linkStatus" style="padding: 8px; border-radius: 4px; margin: 8px 0; display: none;"></div>
+                    
+                    <div style="background: #f0f8ff; padding: 12px; border-radius: 6px; margin: 12px 0; font-size: 0.8rem;">
+                        <strong>📋 Comment obtenir le lien :</strong>
+                        <ol style="margin: 8px 0; padding-left: 18px;">
+                            <li>Google Sheets → Fichier</li>
+                            <li><strong>Partager → Publier sur le web</strong></li>
+                            <li>Format : <strong>.csv</strong></li>
+                            <li>Cliquez sur <strong>PUBLIER</strong></li>
+                            <li>Copiez le lien généré</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button onclick="saveNewLink()" class="mobile-btn mobile-btn-primary" style="flex: 2;">
+                        💾 Enregistrer
+                    </button>
+                    <button onclick="testCurrentLink()" class="mobile-btn mobile-btn-secondary" style="flex: 1;">
+                        🔍 Tester
+                    </button>
+                    <button onclick="hideEditLinkModal()" class="mobile-btn" style="flex: 1; background: #95a5a6; color: white;">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAL D'AIDE -->
+        <div id="helpModal" class="mobile-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">❓ Aide & Support</h3>
+                </div>
+                
+                <div style="line-height: 1.5; font-size: 0.9rem;">
+                    <div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #ffc107;">
+                        <strong>🚨 Problème de connexion ?</strong><br>
+                        Google désactive les liens après 7 jours d'inactivité.
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <strong>✅ Solution rapide :</strong>
+                        <ol style="margin: 8px 0; padding-left: 18px;">
+                            <li>Cliquez sur "🔗 Éditer lien"</li>
+                            <li>Suivez les étapes affichées</li>
+                            <li>Collez le NOUVEAU lien</li>
+                            <li>Cliquez sur "Enregistrer"</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background: #d4edda; padding: 12px; border-radius: 6px; margin: 12px 0; border-left: 4px solid #28a745;">
+                        <strong>💡 Astuce :</strong><br>
+                        Ouvrez votre Google Sheets une fois par semaine pour maintenir le lien actif.
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; gap: 8px;">
+                    <button onclick="hideHelpModal()" class="mobile-btn mobile-btn-primary" style="flex: 1;">
+                        Compris !
+                    </button>
+                    <button onclick="showEditLinkModal()" class="mobile-btn mobile-btn-secondary" style="flex: 1;">
+                        Ouvrir éditeur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSSg3azNidCrk7DOWOCJPCjoplrmuMB9LUs876C4EcRWyePwzBpE8CRbEQSreOwHUC0x6Ux9w8HTvu7/pub?gid=432489701&single=true&output=csv';
+        const AUTO_REFRESH_MINUTES = 5;
+        const HIGHLIGHT_DURATION = 60 * 60 * 1000; // 1 heure
+        
+        let GOOGLE_SHEET_URL = localStorage.getItem('saved_sheet_url') || DEFAULT_SHEET_URL;
+        let previousData = [];
+        let newClients = new Map();
+        let updatedTimes = new Map();
+        let connectionStatus = 'checking';
+        let isRefreshing = false;
+        
+        // ============================================
+        // FONCTIONS MOBILE
+        // ============================================
+        
+        function showMobileNotification(message) {
+            const notification = document.getElementById('mobileNotification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 3000);
+        }
+        
+        function updateConnectionStatus(status, message = '') {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            connectionStatus = status;
+            
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator status-' + status;
+            }
+            
+            if (statusText) {
+                switch(status) {
+                    case 'connected':
+                        statusText.textContent = 'Connecté';
+                        break;
+                    case 'disconnected':
+                        statusText.textContent = 'Déconnecté';
+                        break;
+                    case 'checking':
+                        statusText.textContent = 'Vérification...';
+                        break;
+                }
+            }
+        }
+        
+        // ============================================
+        // GESTION DES HIGHLIGHTS
+        // ============================================
+        
+        function saveHighlightState() {
+            try {
+                localStorage.setItem('newClients', JSON.stringify(Array.from(newClients.entries())));
+                localStorage.setItem('updatedTimes', JSON.stringify(Array.from(updatedTimes.entries())));
+            } catch (e) {
+                console.log('Erreur sauvegarde:', e);
+            }
+        }
+        
+        function loadHighlightState() {
+            try {
+                const savedNewClients = localStorage.getItem('newClients');
+                const savedUpdatedTimes = localStorage.getItem('updatedTimes');
+                
+                if (savedNewClients) {
+                    newClients = new Map(JSON.parse(savedNewClients));
+                }
+                if (savedUpdatedTimes) {
+                    updatedTimes = new Map(JSON.parse(savedUpdatedTimes));
+                }
+            } catch (e) {
+                console.log('Erreur chargement:', e);
+                newClients = new Map();
+                updatedTimes = new Map();
+            }
+        }
+        
+        function cleanOldHighlights() {
+            const now = Date.now();
+            let cleaned = false;
+            
+            for (const [rowId, timestamp] of newClients.entries()) {
+                if (now - timestamp > HIGHLIGHT_DURATION) {
+                    newClients.delete(rowId);
+                    cleaned = true;
+                }
+            }
+            
+            for (const [rowId, timestamp] of updatedTimes.entries()) {
+                if (now - timestamp > HIGHLIGHT_DURATION) {
+                    updatedTimes.delete(rowId);
+                    cleaned = true;
+                }
+            }
+            
+            if (cleaned) {
+                saveHighlightState();
+                updateNewClientsIndicator();
+            }
+        }
+        
+        function updateNewClientsIndicator() {
+            const indicator = document.getElementById('newClientsIndicator');
+            const countElement = document.getElementById('newClientsCount');
+            
+            const totalNew = newClients.size + updatedTimes.size;
+            
+            if (totalNew > 0) {
+                indicator.style.display = 'flex';
+                countElement.textContent = totalNew;
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        function detectChanges(currentData) {
+            const now = Date.now();
+            const currentRows = currentData.rows;
+            
+            if (previousData.length === 0) {
+                previousData = currentRows.slice();
+                return;
+            }
+            
+            const previousMap = new Map();
+            previousData.forEach(row => {
+                previousMap.set(row.uniqueId, row);
+            });
+            
+            let newClientsAdded = 0;
+            let timesUpdated = 0;
+            
+            currentRows.forEach(currentRow => {
+                const rowId = currentRow.uniqueId;
+                
+                if (!previousMap.has(rowId)) {
+                    const similarRow = findSimilarRow(previousData, currentRow);
+                    
+                    if (similarRow && similarRow.heure !== currentRow.heure) {
+                        updatedTimes.set(rowId, now);
+                        timesUpdated++;
+                    } else {
+                        newClients.set(rowId, now);
+                        newClientsAdded++;
+                    }
+                } else {
+                    const previousRow = previousMap.get(rowId);
+                    
+                    if (previousRow.heure !== currentRow.heure) {
+                        if (newClients.has(rowId)) {
+                            newClients.delete(rowId);
+                        }
+                        
+                        updatedTimes.set(rowId, now);
+                        timesUpdated++;
+                    }
+                }
+            });
+            
+            cleanRemovedRows(currentRows);
+            saveHighlightState();
+            updateNewClientsIndicator();
+            
+            if (newClientsAdded > 0 || timesUpdated > 0) {
+                let message = '';
+                if (newClientsAdded > 0) {
+                    message += `${newClientsAdded} nouveau(x) client(s) `;
+                }
+                if (timesUpdated > 0) {
+                    if (message) message += 'et ';
+                    message += `${timesUpdated} heure(s) modifiée(s)`;
+                }
+                showMobileNotification(`🎯 ${message}`);
+            }
+            
+            previousData = currentRows.slice();
+        }
+        
+        function findSimilarRow(previousRows, currentRow) {
+            return previousRows.find(row => 
+                row.client === currentRow.client &&
+                row.projet === currentRow.projet &&
+                row.date === currentRow.date
+            );
+        }
+        
+        function cleanRemovedRows(currentRows) {
+            const currentIds = new Set(currentRows.map(r => r.uniqueId));
+            
+            for (const [rowId] of newClients.entries()) {
+                if (!currentIds.has(rowId)) {
+                    newClients.delete(rowId);
+                }
+            }
+            
+            for (const [rowId] of updatedTimes.entries()) {
+                if (!currentIds.has(rowId)) {
+                    updatedTimes.delete(rowId);
+                }
+            }
+        }
+        
+        // ============================================
+        // GESTION DES MODALS
+        // ============================================
+        
+        function showEditLinkModal() {
+            document.getElementById('editLinkModal').classList.add('active');
+            document.getElementById('currentLinkDisplay').textContent = 
+                GOOGLE_SHEET_URL.substring(0, 50) + (GOOGLE_SHEET_URL.length > 50 ? '...' : '');
+            document.getElementById('newSheetLink').value = '';
+            document.getElementById('linkStatus').style.display = 'none';
+        }
+        
+        function hideEditLinkModal() {
+            document.getElementById('editLinkModal').classList.remove('active');
+        }
+        
+        function showHelpModal() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+        
+        function hideHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+        
+        async function saveNewLink() {
+            const newLink = document.getElementById('newSheetLink').value.trim();
+            const statusDiv = document.getElementById('linkStatus');
+            
+            if (!newLink) {
+                showLinkStatus('⚠️ Veuillez coller un lien', 'warning');
+                return;
+            }
+            
+            if (!newLink.startsWith('https://docs.google.com/spreadsheets/d/e/')) {
+                showLinkStatus('❌ Format invalide', 'error');
+                return;
+            }
+            
+            showLinkStatus('🔍 Test du nouveau lien...', 'info');
+            
+            const isValid = await testLink(newLink);
+            
+            if (isValid) {
+                GOOGLE_SHEET_URL = newLink;
+                localStorage.setItem('saved_sheet_url', newLink);
+                
+                showLinkStatus('✅ Lien sauvegardé !', 'success');
+                
+                setTimeout(() => {
+                    hideEditLinkModal();
+                    showMobileNotification('Nouveau lien appliqué');
+                    loadData();
+                }, 2000);
+            } else {
+                showLinkStatus('❌ Le lien ne fonctionne pas', 'error');
+            }
+        }
+        
+        async function testCurrentLink() {
+            showLinkStatus('🔍 Test du lien actuel...', 'info');
+            
+            const isValid = await testLink(GOOGLE_SHEET_URL);
+            
+            if (isValid) {
+                showLinkStatus('✅ Lien actuel fonctionnel !', 'success');
+                showMobileNotification('✅ Connexion active');
+            } else {
+                showLinkStatus('❌ Lien actuel invalide', 'error');
+            }
+        }
+        
+        async function testLink(url) {
+            try {
+                const timestamp = new Date().getTime();
+                const urlWithNoCache = url + (url.includes('?') ? '&' : '?') + '_=' + timestamp;
+                
+                const proxyUrl = 'https://corsproxy.io/?';
+                const response = await fetch(proxyUrl + encodeURIComponent(urlWithNoCache), {
+                    method: 'HEAD',
+                    timeout: 10000
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Test échoué:', error);
+                return false;
+            }
+        }
+        
+        function showLinkStatus(message, type) {
+            const statusDiv = document.getElementById('linkStatus');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            switch(type) {
+                case 'success':
+                    statusDiv.style.background = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    break;
+                case 'error':
+                    statusDiv.style.background = '#f8d7da';
+                    statusDiv.style.color = '#721c24';
+                    break;
+                case 'warning':
+                    statusDiv.style.background = '#fff3cd';
+                    statusDiv.style.color = '#856404';
+                    break;
+                case 'info':
+                    statusDiv.style.background = '#d1ecf1';
+                    statusDiv.style.color = '#0c5460';
+                    break;
+            }
+        }
+        
+        // ============================================
+        // TRAITEMENT DES DONNÉES
+        // ============================================
+        
+        function parseCSV(text) {
+            const rows = [];
+            const lines = text.split(/\r?\n/);
+            
+            for (let line of lines) {
+                if (!line.trim()) continue;
+                
+                const row = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        row.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                row.push(current.trim());
+                
+                rows.push(row);
+            }
+            
+            return rows;
+        }
+        
+        function processDataWithFilter(rows) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            
+            const futureRows = [];
+            let todayCount = 0;
+            
+            let startIndex = 0;
+            if (rows.length > 0) {
+                const firstRow = rows[0];
+                const headerKeywords = ['type', 'client', 'projet', 'lieu', 'date', 'heure', 'équipe', 'equipe', 'véhicule'];
+                const isHeader = firstRow.some(cell => 
+                    cell && typeof cell === 'string' && 
+                    headerKeywords.some(keyword => cell.toLowerCase().includes(keyword))
+                );
+                
+                if (isHeader) {
+                    startIndex = 1;
+                }
+            }
+            
+            // Indices des colonnes (Google Sheets) - AJOUT DE VEHICULE (colonne W = 22)
+            const TYPE = 0, CLIENT = 1, PROJET = 2, IMP = 21, LIEU = 3, DATE = 4, HEURE = 5, VEHICULE = 22;
+            const EQUIPE_START = 6;
+            const EQUIPE_END = 20;
+            
+            const maxRows = 30;
+            let rowCount = 0;
+            
+            for (let i = startIndex; i < rows.length && rowCount < maxRows; i++) {
+                const row = rows[i];
+                if (row.length <= DATE) continue;
+                
+                const dateStr = row[DATE] || '';
+                if (!dateStr) continue;
+                
+                let dateObj = null;
+                let isToday = false;
+                
+                if (dateStr.includes('/')) {
+                    try {
+                        const parts = dateStr.split('/');
+                        if (parts.length === 3) {
+                            const day = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10) - 1;
+                            const year = parseInt(parts[2], 10);
+                            
+                            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                                dateObj = new Date(year, month, day);
+                                
+                                if (!isNaN(dateObj.getTime())) {
+                                    dateObj.setHours(0, 0, 0, 0);
+                                    
+                                    if (dateObj < now) {
+                                        continue;
+                                    }
+                                    
+                                    isToday = dateObj.getTime() === now.getTime();
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                if (dateObj) {
+                    const equipeMembers = [];
+                    for (let j = EQUIPE_START; j <= EQUIPE_END && j < row.length; j++) {
+                        const member = row[j] || '';
+                        if (member.trim() !== '') {
+                            equipeMembers.push(member.trim());
+                        }
+                    }
+                    
+                    const rowData = {
+                        type: row[TYPE] || '',
+                        client: row[CLIENT] || '',
+                        projet: row[PROJET] || '',
+                        imp: row[IMP] || '',
+                        lieu: row[LIEU] || '',
+                        date: dateStr,
+                        heure: row[HEURE] || '',
+                        equipeMembers: equipeMembers,
+                        vehicule: row[VEHICULE] || '', // AJOUT DE LA COLONNE VÉHICULE
+                        dateObj: dateObj,
+                        isToday: isToday,
+                        uniqueId: `${row[CLIENT]}|${row[PROJET]}|${dateStr}|${row[HEURE]}`
+                    };
+                    
+                    futureRows.push(rowData);
+                    rowCount++;
+                    
+                    if (isToday) todayCount++;
+                }
+            }
+            
+            futureRows.sort((a, b) => a.dateObj - b.dateObj);
+            
+            return {
+                rows: futureRows,
+                todayCount: todayCount
+            };
+        }
+        
+        // ============================================
+        // AFFICHAGE MOBILE AVEC NOUVELLES COULEURS ET VÉHICULE
+        // ============================================
+        
+        function displayMobileData(data) {
+            const content = document.getElementById('mobileContent');
+            const totalRows = document.getElementById('totalRows');
+            const todayCount = document.getElementById('todayCount');
+            
+            content.innerHTML = '';
+            totalRows.textContent = data.rows.length;
+            todayCount.textContent = data.todayCount;
+            
+            if (data.rows.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <h3 style="margin-bottom: 10px; color: #95a5a6; font-size: 1.1rem;">Aucune intervention</h3>
+                        <p style="color: #7f8c8d; font-size: 0.9rem;">Aucune intervention future programmée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            data.rows.forEach((row, index) => {
+                const card = document.createElement('div');
+                card.className = 'intervention-card';
+                
+                // DÉTERMINER LE STYLE EN FONCTION DU TYPE ET DU JOUR
+                if (row.isToday) {
+                    // Vérifier si le type est vide
+                    const typeEmpty = !row.type || row.type.trim() === '' || row.type === '-';
+                    
+                    if (typeEmpty) {
+                        // Jour J + Type vide → Rouge foncé
+                        card.classList.add('today-empty-type');
+                    } else {
+                        // Jour J + Type non vide → Rouge normal
+                        card.classList.add('today');
+                    }
+                } else {
+                    // Pas aujourd'hui
+                    if (!row.type || row.type.trim() === '' || row.type === '-') {
+                        card.classList.add('empty-type');
+                    }
+                }
+                
+                // Formater la date pour mobile
+                let formattedDate = row.date;
+                try {
+                    const dateParts = row.date.split('/');
+                    if (dateParts.length === 3) {
+                        const day = parseInt(dateParts[0], 10);
+                        const month = parseInt(dateParts[1], 10) - 1;
+                        const year = parseInt(dateParts[2], 10);
+                        
+                        const dateObj = new Date(year, month, day);
+                        const dayAbbreviations = ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'];
+                        const dayNameAbbrev = dayAbbreviations[dateObj.getDay()];
+                        
+                        formattedDate = `${dayNameAbbrev} ${row.date}`;
+                    }
+                } catch (e) {}
+                
+                // Type avec triangle si montage
+                let typeContent = row.type || '-';
+                let typeClass = '';
+                if (row.type && row.type.toLowerCase().includes('montage')) {
+                    typeClass = 'triangle-marker';
+                }
+                
+                // Client avec highlight si nouveau
+                let clientContent = row.client || '-';
+                if (newClients.has(row.uniqueId) && !updatedTimes.has(row.uniqueId)) {
+                    clientContent = `<span class="new-client-highlight">${clientContent}</span>`;
+                }
+                
+                // Heure avec highlight si modifiée (dans le header)
+                let heureContent = row.heure || '-';
+                let heureClass = '';
+                if (updatedTimes.has(row.uniqueId)) {
+                    heureContent = `<span class="header-time-highlight">${heureContent}</span>`;
+                }
+                
+                // Équipe sous forme de badges
+                let equipeContent = '';
+                if (row.equipeMembers && row.equipeMembers.length > 0) {
+                    equipeContent = `<div class="equipe-container">`;
+                    row.equipeMembers.forEach(member => {
+                        equipeContent += `<span class="equipe-badge">${member}</span>`;
+                    });
+                    equipeContent += `</div>`;
+                } else {
+                    equipeContent = '-';
+                }
+                
+                // Véhicule - affiché à droite de l'équipe
+                let vehiculeContent = row.vehicule || '-';
+                let vehiculeDisplay = '';
+                if (vehiculeContent !== '-') {
+                    vehiculeDisplay = `
+                        <div class="vehicule-section">
+                            <div class="vehicule-value">${vehiculeContent}</div>
+                        </div>
+                    `;
+                }
+                
+                // Créer la carte avec l'heure dans le header et véhicule
+                card.innerHTML = `
+                    <!-- HEADER : Type / Client / Heure / Date -->
+                    <div class="card-header-compact">
+                        <div class="header-left">
+                            <div class="card-type ${typeClass}">${typeContent}</div>
+                            <div class="client-name">${clientContent}</div>
+                            <div class="card-time">${heureContent}</div>
+                        </div>
+                        <div class="card-date">${formattedDate}</div>
+                    </div>
+                    
+                    <!-- CORPS : Sans heure (car déjà dans le header) -->
+                    <div class="card-body-compact">
+                        <div class="compact-line">
+                            <!-- Projet -->
+                            <div class="compact-item">
+                                <span class="compact-label">Projet:</span>
+                                <span class="compact-value">${row.projet || '-'}</span>
+                            </div>
+                            
+                            <!-- Imp -->
+                            <div class="compact-item">
+                                <span class="compact-label">Imp:</span>
+                                <span class="compact-value">${row.imp || '-'}</span>
+                            </div>
+                            
+                            <!-- Lieu -->
+                            <div class="compact-item">
+                                <span class="compact-label">Lieu:</span>
+                                <span class="compact-value">${row.lieu || '-'}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Équipe + Véhicule sur la même ligne -->
+                        <div class="equipe-vehicule-container">
+                            <div class="equipe-section">
+                                <span class="equipe-label">Équipe:</span>
+                                ${equipeContent}
+                            </div>
+                            ${vehiculeDisplay}
+                        </div>
+                    </div>
+                `;
+                
+                content.appendChild(card);
+            });
+        }
+        
+        // ============================================
+        // CHARGEMENT DES DONNÉES
+        // ============================================
+        
+        async function loadData() {
+            if (isRefreshing) return;
+            
+            const loading = document.getElementById('mobileLoading');
+            
+            try {
+                isRefreshing = true;
+                loading.classList.add('active');
+                updateConnectionStatus('checking', 'Tentative de connexion...');
+                
+                cleanOldHighlights();
+                
+                console.log('Chargement depuis:', GOOGLE_SHEET_URL);
+                
+                const timestamp = new Date().getTime();
+                const urlWithNoCache = GOOGLE_SHEET_URL + '&_=' + timestamp;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                try {
+                    const proxyUrl = 'https://corsproxy.io/?';
+                    const response = await fetch(proxyUrl + encodeURIComponent(urlWithNoCache), {
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const csvText = await response.text();
+                    
+                    if (csvText.includes('<!DOCTYPE') || csvText.includes('<html')) {
+                        throw new Error('Lien expiré - redirige vers HTML');
+                    }
+                    
+                    if (!csvText || csvText.trim().length < 10) {
+                        throw new Error('Fichier vide');
+                    }
+                    
+                    const rows = parseCSV(csvText);
+                    const processedData = processDataWithFilter(rows);
+                    
+                    detectChanges(processedData);
+                    displayMobileData(processedData);
+                    
+                    const now = new Date();
+                    document.getElementById('lastUpdateTime').textContent = 
+                        now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+                    
+                    updateConnectionStatus('connected', `Données chargées (${processedData.rows.length} interventions)`);
+                    
+                } catch (fetchError) {
+                    clearTimeout(timeoutId);
+                    throw fetchError;
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                
+                let errorMessage = error.message;
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Timeout - Pas de réponse';
+                } else if (errorMessage.includes('HTML') || errorMessage.includes('html')) {
+                    errorMessage = 'LIEN EXPIRÉ - Cliquez sur "🔗 Éditer lien"';
+                }
+                
+                updateConnectionStatus('disconnected', errorMessage);
+                showMobileNotification('Erreur: ' + errorMessage);
+                
+                const content = document.getElementById('mobileContent');
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <h3 style="margin-bottom: 10px; color: #e74c3c; font-size: 1.1rem;">Problème de connexion</h3>
+                        <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 0.9rem;">${errorMessage}</p>
+                        <button onclick="showEditLinkModal()" class="mobile-btn mobile-btn-primary">
+                            🔗 Éditer le lien
+                        </button>
+                    </div>
+                `;
+            } finally {
+                setTimeout(() => {
+                    loading.classList.remove('active');
+                    isRefreshing = false;
+                }, 500);
+            }
+        }
+        
+        // ============================================
+        // INITIALISATION MOBILE
+        // ============================================
+        
+        function initializeMobile() {
+            console.log('Initialisation version mobile');
+            
+            loadHighlightState();
+            
+            setInterval(cleanOldHighlights, 60000);
+            
+            loadData();
+            
+            setInterval(() => {
+                if (connectionStatus === 'connected' && !isRefreshing) {
+                    console.log('🔄 Actualisation automatique...');
+                    loadData();
+                }
+            }, AUTO_REFRESH_MINUTES * 60000);
+            
+            setInterval(() => {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                
+                if (hours === 0 && minutes < 10 && !isRefreshing) {
+                    console.log('⏰ Minuit - filtrage des dates');
+                    previousData = [];
+                    loadData();
+                }
+            }, 60000);
+            
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                if (!isRefreshing) {
+                    loadData();
+                }
+            });
+            
+            document.querySelectorAll('.mobile-modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideEditLinkModal();
+                    hideHelpModal();
+                }
+            });
+        }
+        
+        // Démarrer l'application
+        document.addEventListener('DOMContentLoaded', initializeMobile);
+        
+    </script>
+</body>
+</html>
